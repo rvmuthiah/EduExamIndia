@@ -17,9 +17,11 @@ const seedAdmin = async () => {
       password: hashedPassword,
     });
 
-    console.log("✅ Super Admin created successfully.");
+    console.log("=================================");
+    console.log("✅ Super Admin Created");
     console.log("Username : admin");
     console.log("Password : admin123");
+    console.log("=================================");
   } catch (error) {
     console.error(error);
   }
