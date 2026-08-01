@@ -5,13 +5,17 @@ import {
   getQuestionPaperById,
   deleteQuestionPaper,
 } from "../services/questionPaper.service";
+import { AuthRequest } from "../../../middleware/auth.middleware";
 
 export const uploadQuestionPaper = async (
-  req: Request,
+  req: AuthRequest,
   res: Response
 ): Promise<void> => {
   try {
-    const questionPaper = await createQuestionPaper(req.body);
+    const questionPaper = await createQuestionPaper({
+      ...req.body,
+      uploadedBy: req.admin.id,
+    });
 
     res.status(201).json({
       success: true,
