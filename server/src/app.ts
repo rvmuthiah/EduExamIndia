@@ -5,6 +5,8 @@ import healthRoutes from "./routes/health.routes";
 import authRoutes from "./routes/auth.routes";
 import questionPaperRoutes from "./modules/questionPaper/routes/questionPaper.routes";
 import uploadRoutes from "./modules/upload/routes/upload.routes";
+import studentRoutes from "./modules/student/routes/student.routes";
+
 
 const app = express();
 
@@ -23,5 +25,6 @@ app.use(
   "/uploads",
   express.static(path.join(process.cwd(), "uploads"))
 );
+app.use("/api/students", studentRoutes);
 
 export default app;
