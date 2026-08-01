@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import healthRoutes from "./routes/health.routes";
 import authRoutes from "./routes/auth.routes";
+import questionPaperRoutes from "./modules/questionPaper/routes/questionPaper.routes";
+
 
 const app = express();
 
@@ -18,6 +20,6 @@ app.get("/", (req, res) => {
 
 app.use("/api/health", healthRoutes);
 app.use("/api/auth", authRoutes);
-app.use("/api/auth", authRoutes);
+app.use("/api/question-papers", questionPaperRoutes);
 
 export default app;
