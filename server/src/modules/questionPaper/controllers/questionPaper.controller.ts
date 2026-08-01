@@ -3,6 +3,7 @@ import {
   createQuestionPaper,
   getAllQuestionPapers,
   getQuestionPaperById,
+  updateQuestionPaper,
   deleteQuestionPaper,
 } from "../services/questionPaper.service";
 import { AuthRequest } from "../../../middleware/auth.middleware";
@@ -90,6 +91,42 @@ await deleteQuestionPaper(id);
   } catch {
     res.status(500).json({
       success: false,
+    });
+  }
+};
+export const editQuestionPaper = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+console.log("=========== UPDATE ===========");
+console.log("ID:", req.params.id);
+console.log("BODY:", req.body);
+
+    const paper = await updateQuestionPaper(
+      req.params.id as string,
+      req.body
+    );
+
+    if (!paper) {
+      res.status(404).json({
+        success: false,
+        message: "Question Paper not found",
+      });
+      return;
+    }
+
+    res.json({
+      success: true,
+      message: "Question Paper Updated",
+      data: paper,
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
     });
   }
 };

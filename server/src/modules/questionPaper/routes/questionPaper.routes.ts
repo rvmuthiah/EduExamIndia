@@ -3,6 +3,7 @@ import {
   uploadQuestionPaper,
   getQuestionPapers,
   getQuestionPaper,
+  editQuestionPaper,
   removeQuestionPaper,
 } from "../controllers/questionPaper.controller";
 
@@ -15,6 +16,8 @@ router.post("/", authenticate, uploadQuestionPaper);
 router.get("/", authenticate, getQuestionPapers);
 
 router.get("/:id", authenticate, getQuestionPaper);
+
+router.put("/:id", authenticate, editQuestionPaper);
 
 router.delete("/:id", authenticate, removeQuestionPaper);
 
