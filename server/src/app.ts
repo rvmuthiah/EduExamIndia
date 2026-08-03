@@ -6,7 +6,10 @@ import authRoutes from "./routes/auth.routes";
 import questionPaperRoutes from "./modules/questionPaper/routes/questionPaper.routes";
 import uploadRoutes from "./modules/upload/routes/upload.routes";
 import studentRoutes from "./modules/student/routes/student.routes";
-
+import examRoutes from "./modules/exam/routes/exam.routes";
+import questionRoutes from "./modules/question/routes/question.routes";
+import examAttemptRoutes from "./modules/examAttempt/routes/examAttempt.routes";
+import studentAnswerRoutes from "./modules/studentAnswer/routes/studentAnswer.routes";
 
 const app = express();
 
@@ -26,5 +29,13 @@ app.use(
   express.static(path.join(process.cwd(), "uploads"))
 );
 app.use("/api/students", studentRoutes);
+app.use("/api/exams", examRoutes);
+app.use("/api/questions", questionRoutes);
+app.use("/api/exam-attempts", examAttemptRoutes);
+app.use("/api/student-answers", studentAnswerRoutes);
+
+
+
+
 
 export default app;

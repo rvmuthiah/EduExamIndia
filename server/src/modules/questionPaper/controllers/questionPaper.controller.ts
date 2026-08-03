@@ -13,6 +13,8 @@ export const uploadQuestionPaper = async (
   res: Response
 ): Promise<void> => {
   try {
+    console.log("BODY:", req.body);
+console.log("ADMIN:", req.admin);
     const questionPaper = await createQuestionPaper({
       ...req.body,
       uploadedBy: req.admin.id,

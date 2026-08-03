@@ -1,0 +1,68 @@
+import mongoose, { Schema, Document } from "mongoose";
+
+export interface IExamAttempt extends Document {
+  studentId: mongoose.Types.ObjectId;
+  examId: mongoose.Types.ObjectId;
+
+  startedAt: Date;
+  submittedAt?: Date;
+
+  score: number;
+
+  totalMarks: number;
+
+  status: string;
+}
+
+const ExamAttemptSchema = new Schema(
+  {
+    studentId: {
+      type: Schema.Types.ObjectId,
+      ref: "Student",
+      required: true,
+    },
+
+    examId: {
+      type: Schema.Types.ObjectId,
+      ref: "Exam",
+      required: true,
+    },
+
+    startedAt: {
+      type: Date,
+      default: Date.now,
+    },
+
+    submittedAt: {
+      type: Date,
+    },
+
+    score: {
+      type: Number,
+      default: 0,
+    },
+
+    totalMarks: {
+      type: Number,
+      default: 0,
+    },
+
+    status: {
+      type: String,
+      enum: [
+        "In Progress",
+        "Submitted",
+        "Completed",
+      ],
+      default: "In Progress",
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+export default mongoose.model<IExamAttempt>(
+  "ExamAttempt",
+  ExamAttemptSchema
+);
