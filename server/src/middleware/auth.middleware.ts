@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 
 
 export interface AuthRequest extends Request {
-  admin?: any;
+  user?: any;
 }
 
 export const authenticate = (
@@ -29,7 +29,7 @@ export const authenticate = (
       process.env.JWT_SECRET as string
     );
 
-    req.admin = decoded;
+    req.user = decoded;
 
     next();
   } catch (error) {

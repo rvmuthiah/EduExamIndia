@@ -9,9 +9,10 @@ export const evaluateExam = async (
   attemptId: string
 ) => {
 
-  // Get Student Answers
   const studentAnswers =
     await getAnswersByAttempt(attemptId);
+
+  let score = 0;
 
   let totalMarks = 0;
 
@@ -27,6 +28,9 @@ export const evaluateExam = async (
 
     if (!question) continue;
 
+    // Total marks of the exam
+    totalMarks += question.marks;
+
     let isCorrect = false;
 
     let marksAwarded = 0;
@@ -35,19 +39,21 @@ export const evaluateExam = async (
       answer.selectedAnswer ===
       question.correctAnswer
     ) {
+
       isCorrect = true;
 
       marksAwarded = question.marks;
 
-      totalMarks += question.marks;
+      score += question.marks;
 
       correctAnswers++;
+
     } else {
 
       marksAwarded =
         -(question.negativeMarks || 0);
 
-      totalMarks += marksAwarded;
+      score += marksAwarded;
 
       wrongAnswers++;
     }
@@ -62,6 +68,7 @@ export const evaluateExam = async (
   }
 
   return {
+    score,
     totalMarks,
     correctAnswers,
     wrongAnswers,

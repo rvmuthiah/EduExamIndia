@@ -10,6 +10,9 @@ import examRoutes from "./modules/exam/routes/exam.routes";
 import questionRoutes from "./modules/question/routes/question.routes";
 import examAttemptRoutes from "./modules/examAttempt/routes/examAttempt.routes";
 import studentAnswerRoutes from "./modules/studentAnswer/routes/studentAnswer.routes";
+import resultRoutes from "./modules/result/routes/result.routes";
+import leaderboardRoutes from "./modules/leaderboard/routes/leaderboard.routes";
+import dashboardRoutes from "./modules/dashboard/routes/dashboard.routes";
 
 const app = express();
 
@@ -33,9 +36,9 @@ app.use("/api/exams", examRoutes);
 app.use("/api/questions", questionRoutes);
 app.use("/api/exam-attempts", examAttemptRoutes);
 app.use("/api/student-answers", studentAnswerRoutes);
-
-
-
+app.use("/api/results", resultRoutes);
+app.use("/api/leaderboard", leaderboardRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
 
 export default app;

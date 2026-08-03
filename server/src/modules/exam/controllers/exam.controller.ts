@@ -121,6 +121,82 @@ export const editExam = async (
   }
 };
 
+// Publish Exam
+export const publishExam = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const id = Array.isArray(req.params.id)
+      ? req.params.id[0]
+      : req.params.id;
+
+    const exam = await updateExam(id, {
+      status: "Published",
+    });
+
+    if (!exam) {
+      res.status(404).json({
+        success: false,
+        message: "Exam Not Found",
+      });
+      return;
+    }
+
+    res.json({
+      success: true,
+      message: "Exam Published Successfully",
+      data: exam,
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+// Close Exam
+export const closeExam = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const id = Array.isArray(req.params.id)
+      ? req.params.id[0]
+      : req.params.id;
+
+    const exam = await updateExam(id, {
+      status: "Closed",
+    });
+
+    if (!exam) {
+      res.status(404).json({
+        success: false,
+        message: "Exam Not Found",
+      });
+      return;
+    }
+
+    res.json({
+      success: true,
+      message: "Exam Closed Successfully",
+      data: exam,
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
 // Delete Exam
 export const removeExam = async (
   req: Request,

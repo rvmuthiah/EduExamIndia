@@ -41,3 +41,35 @@ export const deleteExam = async (
 ) => {
   return await Exam.findByIdAndDelete(id);
 };
+
+// Get Published Exam By ID
+export const getPublishedExamById = async (
+  id: string
+) => {
+  return await Exam.findOne({
+    _id: id,
+    status: "Published",
+  }).populate("questionPaper");
+};
+
+// Validate Exam Time
+export const validateExamTime = (
+  exam: IExam
+) => {
+
+  const now = new Date();
+
+  if (exam.status !== "Published") {
+    throw new Error("Exam is not published");
+  }
+
+  if (now < exam.startDate) {
+    throw new Error("Exam has not started yet");
+  }
+
+  if (now > exam.endDate) {
+    throw new Error("Exam has already ended");
+  }
+
+  return true;
+};

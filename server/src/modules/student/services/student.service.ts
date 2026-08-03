@@ -48,10 +48,11 @@ export const getStudentByEmail = async (email: string) => {
 
 export const generateStudentToken = (student: IStudent) => {
   return jwt.sign(
-    {
-      id: student._id,
-      email: student.email,
-    },
+  {
+    id: student._id,
+    email: student.email,
+    role: "Student",
+  },
     process.env.JWT_SECRET as string,
     {
       expiresIn: "7d",

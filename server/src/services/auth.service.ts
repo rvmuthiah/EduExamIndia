@@ -20,15 +20,16 @@ export const loginAdmin = async (
   }
 
   const token = jwt.sign(
-    {
-      id: admin._id,
-      username: admin.username,
-    },
-    process.env.JWT_SECRET as string,
-    {
-      expiresIn: "7d",
-    }
-  );
+  {
+    id: admin._id,
+    username: admin.username,
+    role: "Admin",
+  },
+  process.env.JWT_SECRET as string,
+  {
+    expiresIn: "7d",
+  }
+);
 
   return {
     token,

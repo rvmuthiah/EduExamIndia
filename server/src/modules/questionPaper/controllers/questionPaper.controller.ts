@@ -14,10 +14,10 @@ export const uploadQuestionPaper = async (
 ): Promise<void> => {
   try {
     console.log("BODY:", req.body);
-console.log("ADMIN:", req.admin);
+console.log("USER:", req.user);
     const questionPaper = await createQuestionPaper({
       ...req.body,
-      uploadedBy: req.admin.id,
+      uploadedBy: req.user.id,
     });
 
     res.status(201).json({
