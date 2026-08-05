@@ -8,16 +8,18 @@ import {
 } from "../controllers/questionPaper.controller";
 import { authorize } from "../../../middleware/role.middleware";
 import { authenticate } from "../../../middleware/auth.middleware";
+import upload from "../../../middleware/upload.middleware";
 
 const router = Router();
 
 // router.post("/", authenticate, uploadQuestionPaper);
 
 router.post(
-    "/upload",
-    authenticate,
-    authorize("Admin"),
-    uploadQuestionPaper
+  "/upload",
+  authenticate,
+  authorize("Admin"),
+  upload.single("pdf"),
+  uploadQuestionPaper
 );
 
 router.get("/", authenticate, getQuestionPapers);

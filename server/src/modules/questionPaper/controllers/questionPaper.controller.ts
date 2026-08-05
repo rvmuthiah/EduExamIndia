@@ -14,15 +14,34 @@ export const uploadQuestionPaper = async (
 ): Promise<void> => {
   try {
     console.log("BODY:", req.body);
-console.log("USER:", req.user);
+    console.log("FILE:", req.file);
+    console.log("USER:", req.user);
+
+    if (!req.file) {
+      res.status(400).json({
+        success: false,
+        message: "Please upload a PDF file.",
+      });
+      return;
+    }
+
     const questionPaper = await createQuestionPaper({
-      ...req.body,
+      title: req.body.title,
+      board: req.body.board,
+      standard: Number(req.body.standard),
+      subject: req.body.subject,
+      chapter: req.body.chapter,
+      examType: req.body.examType,
+
+      // Save uploaded PDF filename
+      pdfFile: req.file.filename,
+
       uploadedBy: req.user.id,
     });
 
     res.status(201).json({
       success: true,
-      message: "Question Paper created successfully",
+      message: "Question Paper uploaded successfully",
       data: questionPaper,
     });
   } catch (error) {
