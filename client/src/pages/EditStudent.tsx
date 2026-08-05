@@ -12,6 +12,7 @@ import {
 
 import {getStudent, updateStudent} from "../services/student.service";
 
+
 interface StudentForm {
   name: string;
   email: string;

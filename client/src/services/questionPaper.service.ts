@@ -7,15 +7,7 @@ const getToken = () => ({
 });
 
 export const getQuestionPapers = async () => {
-  const token = localStorage.getItem("token");
-
-  console.log("TOKEN:", token);
-
-  const response = await api.get("/question-papers", {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await api.get("/question-papers", getToken());
 
   console.log("QUESTION PAPER RESPONSE:", response.data);
 
@@ -23,7 +15,11 @@ export const getQuestionPapers = async () => {
 };
 
 export const getQuestionPaper = async (id: string) => {
-  const response = await api.get(`/question-papers/${id}`, getToken());
+  const response = await api.get(
+    `/question-papers/${id}`,
+    getToken()
+  );
+
   return response.data;
 };
 
@@ -33,7 +29,7 @@ export const createQuestionPaper = async (data: FormData) => {
     data,
     {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        ...getToken().headers,
         "Content-Type": "multipart/form-data",
       },
     }
@@ -51,7 +47,7 @@ export const updateQuestionPaper = async (
     data,
     {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        ...getToken().headers,
         "Content-Type": "multipart/form-data",
       },
     }
@@ -63,11 +59,7 @@ export const updateQuestionPaper = async (
 export const deleteQuestionPaper = async (id: string) => {
   const response = await api.delete(
     `/question-papers/${id}`,
-    {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    }
+    getToken()
   );
 
   return response.data;
