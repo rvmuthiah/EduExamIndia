@@ -4,13 +4,16 @@ import {useNavigate} from "react-router-dom";
 import {
   Box,
   Button,
+  Chip,
   CircularProgress,
   Paper,
   Table,
   TableBody,
   TableCell,
   TableHead,
+  TablePagination,
   TableRow,
+  TextField,
   Typography,
 } from "@mui/material";
 
@@ -37,9 +40,18 @@ const QuestionPapers = () => {
 
   const [questionPapers, setQuestionPapers] = useState<QuestionPaper[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const [search, setSearch] = useState("");
+
   const [deleteId, setDeleteId] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
 
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  // -----------------------------
+  // Load Question Papers
+  // -----------------------------
   const loadQuestionPapers = async () => {
     setLoading(true);
 
@@ -65,6 +77,9 @@ const QuestionPapers = () => {
     void loadQuestionPapers();
   }, []);
 
+  // -----------------------------
+  // Delete Question Paper
+  // -----------------------------
   const handleDelete = async () => {
     try {
       await deleteQuestionPaper(deleteId);
@@ -81,6 +96,38 @@ const QuestionPapers = () => {
     }
   };
 
+  // -----------------------------
+  // Search Filter
+  // -----------------------------
+  const filteredQuestionPapers = questionPapers.filter(paper => {
+    const keyword = search.toLowerCase();
+
+    return (
+      paper.title.toLowerCase().includes(keyword) ||
+      paper.subject.toLowerCase().includes(keyword) ||
+      paper.board.toLowerCase().includes(keyword) ||
+      paper.examType.toLowerCase().includes(keyword) ||
+      paper.standard.toString().includes(search)
+    );
+  });
+
+  // -----------------------------
+  // Pagination
+  // -----------------------------
+  const handleChangePage = (_: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  // -----------------------------
+  // Loading
+  // -----------------------------
   if (loading) {
     return (
       <Box
@@ -94,7 +141,6 @@ const QuestionPapers = () => {
       </Box>
     );
   }
-
   return (
     <>
       <Typography
@@ -102,6 +148,15 @@ const QuestionPapers = () => {
         gutterBottom>
         Question Papers
       </Typography>
+
+      <TextField
+        fullWidth
+        label="Search Question Paper"
+        variant="outlined"
+        sx={{mb: 2}}
+        value={search}
+        onChange={e => setSearch(e.target.value)}
+      />
 
       <Button
         variant="contained"
@@ -126,78 +181,107 @@ const QuestionPapers = () => {
           </TableHead>
 
           <TableBody>
-            {questionPapers.length > 0 ? (
-              questionPapers.map(paper => (
-                <TableRow key={paper._id}>
-                  <TableCell>{paper.title}</TableCell>
-                  <TableCell>{paper.board}</TableCell>
-                  <TableCell>{paper.standard}</TableCell>
-                  <TableCell>{paper.subject}</TableCell>
-                  <TableCell>{paper.examType}</TableCell>
-                  <TableCell>{paper.status}</TableCell>
+            {filteredQuestionPapers.length > 0 ? (
+              filteredQuestionPapers
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map(paper => (
+                  <TableRow key={paper._id}>
+                    <TableCell>{paper.title}</TableCell>
 
-                  <TableCell>{paper.pdfFile}</TableCell>
+                    <TableCell>{paper.board}</TableCell>
 
-                  <TableCell align="center">
-                    <Button
-                      size="small"
-                      variant="contained"
-                      color="info"
-                      sx={{mr: 1}}
-                      onClick={() => {
-                        if (!paper.pdfFile) {
-                          alert("PDF file not found.");
-                          return;
+                    <TableCell>{paper.standard}</TableCell>
+
+                    <TableCell>{paper.subject}</TableCell>
+
+                    <TableCell>{paper.examType}</TableCell>
+
+                    <TableCell>
+                      <Chip
+                        label={paper.status}
+                        color={
+                          paper.status === "Approved"
+                            ? "success"
+                            : paper.status === "Rejected"
+                              ? "error"
+                              : "warning"
                         }
+                        size="small"
+                      />
+                    </TableCell>
 
-                        let file = paper.pdfFile;
+                    <TableCell>{paper.pdfFile}</TableCell>
 
-                        file = file.replace("uploads/question-papers/", "");
-                        file = file.replace("uploads/", "");
+                    <TableCell align="center">
+                      <Button
+                        size="small"
+                        variant="contained"
+                        color="info"
+                        sx={{mr: 1}}
+                        onClick={() => {
+                          if (!paper.pdfFile) {
+                            alert("PDF file not found.");
+                            return;
+                          }
 
-                        window.open(
-                          `http://localhost:5000/uploads/${file}`,
-                          "_blank",
-                        );
-                      }}>
-                      View
-                    </Button>
+                          let file = paper.pdfFile;
 
-                    <Button
-                      size="small"
-                      variant="contained"
-                      color="warning"
-                      sx={{mr: 1}}
-                      onClick={() =>
-                        navigate(`/questionpapers/edit/${paper._id}`)
-                      }>
-                      Edit
-                    </Button>
+                          file = file.replace("uploads/question-papers/", "");
 
-                    <Button
-                      size="small"
-                      variant="contained"
-                      color="error"
-                      onClick={() => {
-                        setDeleteId(paper._id);
-                        setDialogOpen(true);
-                      }}>
-                      Delete
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))
+                          file = file.replace("uploads/", "");
+
+                          window.open(
+                            `http://localhost:5000/uploads/${file}`,
+                            "_blank",
+                          );
+                        }}>
+                        View
+                      </Button>
+
+                      <Button
+                        size="small"
+                        variant="contained"
+                        color="warning"
+                        sx={{mr: 1}}
+                        onClick={() =>
+                          navigate(`/questionpapers/edit/${paper._id}`)
+                        }>
+                        Edit
+                      </Button>
+
+                      <Button
+                        size="small"
+                        variant="contained"
+                        color="error"
+                        onClick={() => {
+                          setDeleteId(paper._id);
+                          setDialogOpen(true);
+                        }}>
+                        Delete
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={8}
-                  align="center">
+                  align="center"
+                  colSpan={8}>
                   No Question Papers Found
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
+        <TablePagination
+          component="div"
+          count={filteredQuestionPapers.length}
+          page={page}
+          rowsPerPage={rowsPerPage}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+          rowsPerPageOptions={[5, 10, 25, 50]}
+        />
       </Paper>
 
       <DeleteDialog
