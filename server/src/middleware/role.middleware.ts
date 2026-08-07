@@ -17,6 +17,11 @@ export const authorize =
       return;
     }
 
+    console.log("========== AUTHORIZATION CHECK ==========");
+    console.log("User Role:", req.user.role);
+    console.log("Allowed Roles:", roles);
+    console.log("==========================================");
+
     if (!roles.includes(req.user.role)) {
       res.status(403).json({
         success: false,

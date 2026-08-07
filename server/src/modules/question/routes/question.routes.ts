@@ -1,9 +1,11 @@
 import { Router } from "express";
+
 import {
   addQuestion,
   getQuestions,
   getQuestion,
-  getExamQuestions,
+  getQuestionsForExam,
+  getQuestionsForQuestionPaper,
   editQuestion,
   removeQuestion,
 } from "../controllers/question.controller";
@@ -11,11 +13,32 @@ import {
 import { authenticate } from "../../../middleware/auth.middleware";
 import { authorize } from "../../../middleware/role.middleware";
 
-
 const router = Router();
 
-// Create Question
-// router.post("/", authenticate, addQuestion);
+router.get(
+  "/",
+  authenticate,
+  getQuestions
+);
+
+router.get(
+  "/exam/:examId",
+  authenticate,
+  getQuestionsForExam
+);
+
+router.get(
+  "/paper/:questionPaperId",
+  authenticate,
+  getQuestionsForQuestionPaper
+);
+
+router.get(
+  "/:id",
+  authenticate,
+  getQuestion
+);
+
 router.post(
   "/",
   authenticate,
@@ -23,18 +46,6 @@ router.post(
   addQuestion
 );
 
-
-// Get All Questions
-router.get("/", authenticate, getQuestions);
-
-// Get Question By ID
-router.get("/:id", authenticate, getQuestion);
-
-// Get Questions By Exam
-router.get("/exam/:examId", authenticate, getExamQuestions);
-
-// Update Question
-// router.put("/:id", authenticate, editQuestion);
 router.put(
   "/:id",
   authenticate,
@@ -42,18 +53,11 @@ router.put(
   editQuestion
 );
 
-
-
-// Delete Question
-// router.delete("/:id", authenticate, removeQuestion);
 router.delete(
   "/:id",
   authenticate,
   authorize("Admin"),
   removeQuestion
 );
-
-
-
 
 export default router;

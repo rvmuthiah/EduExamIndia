@@ -1,39 +1,68 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 export interface IQuestion extends Document {
-  examId: mongoose.Types.ObjectId;
+  examId?: mongoose.Types.ObjectId;
+  questionPaperId?: mongoose.Types.ObjectId;
+
+  board: string;
+  standard: number;
+  subject: string;
+  chapter: string;
 
   question: string;
 
   optionA: string;
-
   optionB: string;
-
   optionC: string;
-
   optionD: string;
 
-  correctAnswer: string;
+  correctAnswer: "A" | "B" | "C" | "D";
 
   marks: number;
-
   negativeMarks: number;
 
-  difficulty: string;
-
-  chapter: string;
+  difficulty: "Easy" | "Medium" | "Hard";
 
   explanation?: string;
 
-  status: string;
+  status: "Active" | "Inactive";
 }
 
-const QuestionSchema = new Schema(
+const QuestionSchema = new Schema<IQuestion>(
   {
     examId: {
       type: Schema.Types.ObjectId,
       ref: "Exam",
+      required: false,
+    },
+
+    questionPaperId: {
+      type: Schema.Types.ObjectId,
+      ref: "QuestionPaper",
+      required: false,
+    },
+
+    board: {
+      type: String,
       required: true,
+      trim: true,
+    },
+
+    standard: {
+      type: Number,
+      required: true,
+    },
+
+    subject: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    chapter: {
+      type: String,
+      default: "",
+      trim: true,
     },
 
     question: {
@@ -45,21 +74,25 @@ const QuestionSchema = new Schema(
     optionA: {
       type: String,
       required: true,
+      trim: true,
     },
 
     optionB: {
       type: String,
       required: true,
+      trim: true,
     },
 
     optionC: {
       type: String,
       required: true,
+      trim: true,
     },
 
     optionD: {
       type: String,
       required: true,
+      trim: true,
     },
 
     correctAnswer: {
@@ -82,11 +115,6 @@ const QuestionSchema = new Schema(
       type: String,
       enum: ["Easy", "Medium", "Hard"],
       default: "Easy",
-    },
-
-    chapter: {
-      type: String,
-      default: "",
     },
 
     explanation: {

@@ -10,9 +10,8 @@ import QuestionPapers from "../pages/QuestionPapers";
 import AddQuestionPaper from "../pages/AddQuestionPaper";
 import EditQuestionPaper from "../pages/EditQuestionPaper";
 import ViewQuestionPaper from "../pages/ViewQuestionPaper";
-
-
-
+import Questions from "../pages/Questions";
+import AddQuestion from "../pages/AddQuestion";
 
 
 const AppRoutes = () => {
@@ -63,7 +62,21 @@ const AppRoutes = () => {
           path="/questionpapers/view/:id"
           element={<ViewQuestionPaper />}
         />
+
+        <Route
+          path="/questions"
+          element={<Questions />}
+        />
       </Route>
+
+      <Route
+        path="/questions/add"
+        element={<AddQuestion />}
+      />
+
+
+
+      
     </Routes>
   );
 };
