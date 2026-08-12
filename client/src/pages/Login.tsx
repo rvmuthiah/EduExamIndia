@@ -28,8 +28,9 @@ const Login = () => {
 
       const {token, username: loggedInUser} = response.data;
 
-      localStorage.setItem("token", token);
+      localStorage.setItem("adminToken", token);
       localStorage.setItem("username", loggedInUser);
+      localStorage.setItem("role", "Admin");
 
         alert("Login Successful");
 

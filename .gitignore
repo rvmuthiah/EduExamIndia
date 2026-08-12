@@ -19,3 +19,8 @@ build/
 # OS
 .DS_Store
 Thumbs.db
+
+# Uploaded / generated files
+server/uploads/
+server/del/
+del_qp/

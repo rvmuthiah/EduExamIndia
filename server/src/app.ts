@@ -13,11 +13,17 @@ import studentAnswerRoutes from "./modules/studentAnswer/routes/studentAnswer.ro
 import resultRoutes from "./modules/result/routes/result.routes";
 import leaderboardRoutes from "./modules/leaderboard/routes/leaderboard.routes";
 import dashboardRoutes from "./modules/dashboard/routes/dashboard.routes";
+import pdfExtractionRoutes from "./modules/questionPaper/routes/pdfExtraction.routes";
+import mcqParserRoutes from "./modules/questionPaper/routes/mcqParser.routes";
+import questionPaperImportRoutes from "./modules/questionPaper/routes/questionPaperImport.routes";
+
+
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({extended: true}));
 
 app.get("/", (req, res) => {
   res.send("Welcome to EduExam India (RankOne) Backend 🚀");
@@ -26,6 +32,10 @@ app.get("/", (req, res) => {
 app.use("/api/health", healthRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/question-papers", questionPaperRoutes);
+app.use(
+  "/api/question-paper-imports",
+  questionPaperImportRoutes,
+);
 app.use("/api/upload", uploadRoutes);
 app.use(
   "/uploads",
@@ -34,6 +44,14 @@ app.use(
 app.use("/api/students", studentRoutes);
 app.use("/api/exams", examRoutes);
 app.use("/api/questions", questionRoutes);
+app.use(
+  "/api/question-papers/pdf",
+  pdfExtractionRoutes,
+);
+app.use(
+  "/api/question-papers/mcq",
+  mcqParserRoutes,
+);
 app.use("/api/exam-attempts", examAttemptRoutes);
 app.use("/api/student-answers", studentAnswerRoutes);
 app.use("/api/results", resultRoutes);

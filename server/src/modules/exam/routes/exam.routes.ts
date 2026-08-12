@@ -12,6 +12,7 @@ import { authenticate } from "../../../middleware/auth.middleware";
 import { authorize } from "../../../middleware/role.middleware";
 
 
+
 const router = Router();
 
 // Create Exam
@@ -62,5 +63,7 @@ router.delete(
   authorize("Admin"),
   removeExam
 );
+
+
 
 export default router;

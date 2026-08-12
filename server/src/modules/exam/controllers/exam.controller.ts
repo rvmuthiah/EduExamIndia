@@ -1,4 +1,6 @@
 import { Request, Response } from "express";
+import { AuthRequest } from "../../../middleware/auth.middleware";
+
 import {
   createExam,
   getAllExams,
@@ -7,13 +9,87 @@ import {
   deleteExam,
 } from "../services/exam.service";
 
-// Create Exam
+import {
+  getQuestionsByQuestionPaper,
+} from "../../question/services/question.service";
+
+// =====================================================
+// CREATE EXAM
+// =====================================================
+
 export const addExam = async (
-  req: Request,
-  res: Response
+  req: AuthRequest,
+  res: Response,
 ): Promise<void> => {
   try {
-    const exam = await createExam(req.body);
+    console.log("========== CREATE EXAM ==========");
+    console.log("BODY:", req.body);
+    console.log("USER:", req.user);
+
+    if (!req.user) {
+      res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
+      return;
+    }
+
+    const {questionPaperId} = req.body;
+
+    if (!questionPaperId) {
+      res.status(400).json({
+        success: false,
+        message: "Question Paper is required",
+      });
+      return;
+    }
+
+    // =====================================================
+    // GET QUESTIONS FROM QUESTION PAPER
+    // =====================================================
+
+    const questions =
+      await getQuestionsByQuestionPaper(questionPaperId);
+
+    console.log(
+      "QUESTIONS IN QUESTION PAPER:",
+      questions.length,
+    );
+
+    // =====================================================
+    // CALCULATE TOTAL QUESTIONS
+    // =====================================================
+
+    const totalQuestions = questions.length;
+
+    // =====================================================
+    // CALCULATE TOTAL MARKS
+    // =====================================================
+
+    const totalMarks = questions.reduce(
+      (total, question) => {
+        return total + (question.marks || 0);
+      },
+      0,
+    );
+
+    console.log("TOTAL QUESTIONS:", totalQuestions);
+    console.log("TOTAL MARKS:", totalMarks);
+
+    // =====================================================
+    // CREATE EXAM
+    // =====================================================
+
+    const exam = await createExam({
+      ...req.body,
+
+      // Never trust these values from frontend
+      totalQuestions,
+      totalMarks,
+
+      // Always take creator from authenticated user
+      createdBy: req.user.id,
+    });
 
     res.status(201).json({
       success: true,
@@ -21,7 +97,7 @@ export const addExam = async (
       data: exam,
     });
   } catch (error) {
-    console.error(error);
+    console.error("CREATE EXAM ERROR:", error);
 
     res.status(500).json({
       success: false,
@@ -29,21 +105,23 @@ export const addExam = async (
     });
   }
 };
+// =====================================================
+// GET ALL EXAMS
+// =====================================================
 
-// Get All Exams
 export const getExams = async (
-  req: Request,
-  res: Response
+  req: AuthRequest,
+  res: Response,
 ): Promise<void> => {
   try {
     const exams = await getAllExams();
 
-    res.json({
+    res.status(200).json({
       success: true,
       data: exams,
     });
   } catch (error) {
-    console.error(error);
+    console.error("GET EXAMS ERROR:", error);
 
     res.status(500).json({
       success: false,
@@ -52,10 +130,13 @@ export const getExams = async (
   }
 };
 
-// Get Exam By ID
+// =====================================================
+// GET EXAM BY ID
+// =====================================================
+
 export const getExam = async (
-  req: Request,
-  res: Response
+  req: AuthRequest,
+  res: Response,
 ): Promise<void> => {
   try {
     const id = Array.isArray(req.params.id)
@@ -72,12 +153,12 @@ export const getExam = async (
       return;
     }
 
-    res.json({
+    res.status(200).json({
       success: true,
       data: exam,
     });
   } catch (error) {
-    console.error(error);
+    console.error("GET EXAM ERROR:", error);
 
     res.status(500).json({
       success: false,
@@ -86,17 +167,23 @@ export const getExam = async (
   }
 };
 
-// Update Exam
+// =====================================================
+// UPDATE EXAM
+// =====================================================
+
 export const editExam = async (
-  req: Request,
-  res: Response
+  req: AuthRequest,
+  res: Response,
 ): Promise<void> => {
   try {
     const id = Array.isArray(req.params.id)
       ? req.params.id[0]
       : req.params.id;
 
-    const exam = await updateExam(id, req.body);
+    const exam = await updateExam(
+      id,
+      req.body,
+    );
 
     if (!exam) {
       res.status(404).json({
@@ -106,13 +193,13 @@ export const editExam = async (
       return;
     }
 
-    res.json({
+    res.status(200).json({
       success: true,
       message: "Exam Updated Successfully",
       data: exam,
     });
   } catch (error) {
-    console.error(error);
+    console.error("UPDATE EXAM ERROR:", error);
 
     res.status(500).json({
       success: false,
@@ -121,10 +208,13 @@ export const editExam = async (
   }
 };
 
-// Publish Exam
+// =====================================================
+// PUBLISH EXAM
+// =====================================================
+
 export const publishExam = async (
-  req: Request,
-  res: Response
+  req: AuthRequest,
+  res: Response,
 ): Promise<void> => {
   try {
     const id = Array.isArray(req.params.id)
@@ -143,14 +233,13 @@ export const publishExam = async (
       return;
     }
 
-    res.json({
+    res.status(200).json({
       success: true,
       message: "Exam Published Successfully",
       data: exam,
     });
-
   } catch (error) {
-    console.error(error);
+    console.error("PUBLISH EXAM ERROR:", error);
 
     res.status(500).json({
       success: false,
@@ -159,10 +248,13 @@ export const publishExam = async (
   }
 };
 
-// Close Exam
+// =====================================================
+// COMPLETE EXAM
+// =====================================================
+
 export const closeExam = async (
-  req: Request,
-  res: Response
+  req: AuthRequest,
+  res: Response,
 ): Promise<void> => {
   try {
     const id = Array.isArray(req.params.id)
@@ -170,7 +262,7 @@ export const closeExam = async (
       : req.params.id;
 
     const exam = await updateExam(id, {
-      status: "Closed",
+      status: "Completed",
     });
 
     if (!exam) {
@@ -181,14 +273,13 @@ export const closeExam = async (
       return;
     }
 
-    res.json({
+    res.status(200).json({
       success: true,
-      message: "Exam Closed Successfully",
+      message: "Exam Completed Successfully",
       data: exam,
     });
-
   } catch (error) {
-    console.error(error);
+    console.error("COMPLETE EXAM ERROR:", error);
 
     res.status(500).json({
       success: false,
@@ -197,24 +288,35 @@ export const closeExam = async (
   }
 };
 
-// Delete Exam
+// =====================================================
+// DELETE EXAM
+// =====================================================
+
 export const removeExam = async (
-  req: Request,
-  res: Response
+  req: AuthRequest,
+  res: Response,
 ): Promise<void> => {
   try {
     const id = Array.isArray(req.params.id)
       ? req.params.id[0]
       : req.params.id;
 
-    await deleteExam(id);
+    const exam = await deleteExam(id);
 
-    res.json({
+    if (!exam) {
+      res.status(404).json({
+        success: false,
+        message: "Exam Not Found",
+      });
+      return;
+    }
+
+    res.status(200).json({
       success: true,
       message: "Exam Deleted Successfully",
     });
   } catch (error) {
-    console.error(error);
+    console.error("DELETE EXAM ERROR:", error);
 
     res.status(500).json({
       success: false,

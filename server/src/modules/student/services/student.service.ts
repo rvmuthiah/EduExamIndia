@@ -29,11 +29,23 @@ export const getStudentById = async (id: string) => {
 // Update Student
 export const updateStudent = async (
   id: string,
-  data: Partial<IStudent>
+  data: Partial<IStudent>,
 ) => {
-  return await Student.findByIdAndUpdate(id, data, {
-    new: true,
-  });
+  if (data.password) {
+    data.password = await bcrypt.hash(
+      data.password,
+      10,
+    );
+  }
+
+  return await Student.findByIdAndUpdate(
+    id,
+    data,
+    {
+      new: true,
+      runValidators: true,
+    },
+  );
 };
 
 // Delete Student

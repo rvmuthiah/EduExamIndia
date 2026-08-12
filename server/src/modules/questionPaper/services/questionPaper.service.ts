@@ -3,6 +3,7 @@ import QuestionPaper, {
 } from "../models/questionPaper.model";
 
 
+
 export const createQuestionPaper = async (
   data: Partial<IQuestionPaper>
 ) => {
@@ -33,3 +34,4 @@ export const updateQuestionPaper = async (
 export const deleteQuestionPaper = async (id: string) => {
   return await QuestionPaper.findByIdAndDelete(id);
 };
+

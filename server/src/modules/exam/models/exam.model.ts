@@ -1,23 +1,47 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Document, Schema } from "mongoose";
 
 export interface IExam extends Document {
   title: string;
+
+  questionPaperId: mongoose.Types.ObjectId;
+
   board: string;
   standard: number;
   subject: string;
-  questionPaper: mongoose.Types.ObjectId;
-  duration: number;
+  chapter?: string;
+
+  examType: string;
+
+  durationMinutes: number;
+
   totalQuestions: number;
   totalMarks: number;
-  startDate: Date;
-  endDate: Date;
-  status: string;
+
+  negativeMarking: boolean;
+  negativeMarks: number;
+
+  startDate?: Date;
+  endDate?: Date;
+
+  status: "Draft" | "Published" | "Completed" | "Cancelled";
+
+  createdBy: mongoose.Types.ObjectId;
+
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
-const ExamSchema = new Schema(
+const examSchema = new Schema<IExam>(
   {
     title: {
       type: String,
+      required: true,
+      trim: true,
+    },
+
+    questionPaperId: {
+      type: Schema.Types.ObjectId,
+      ref: "QuestionPaper",
       required: true,
     },
 
@@ -36,49 +60,73 @@ const ExamSchema = new Schema(
       required: true,
     },
 
-    questionPaper: {
-      type: Schema.Types.ObjectId,
-      ref: "QuestionPaper",
+    chapter: {
+      type: String,
+      default: "",
+    },
+
+    examType: {
+      type: String,
       required: true,
     },
 
-    duration: {
+    durationMinutes: {
       type: Number,
       required: true,
-      default: 30,
+      min: 1,
     },
 
     totalQuestions: {
       type: Number,
-      required: true,
-      default: 100,
+      default: 0,
     },
 
     totalMarks: {
       type: Number,
-      required: true,
-      default: 100,
+      default: 0,
+    },
+
+    negativeMarking: {
+      type: Boolean,
+      default: false,
+    },
+
+    negativeMarks: {
+      type: Number,
+      default: 0,
     },
 
     startDate: {
       type: Date,
-      required: true,
     },
 
     endDate: {
       type: Date,
-      required: true,
     },
 
     status: {
       type: String,
-      enum: ["Draft", "Published", "Completed"],
+      enum: [
+        "Draft",
+        "Published",
+        "Completed",
+        "Cancelled",
+      ],
       default: "Draft",
+    },
+
+    createdBy: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
     },
   },
   {
     timestamps: true,
-  }
+  },
 );
 
-export default mongoose.model<IExam>("Exam", ExamSchema);
+export default mongoose.model<IExam>(
+  "Exam",
+  examSchema,
+);

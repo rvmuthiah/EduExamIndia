@@ -48,7 +48,6 @@ export const updateQuestionPaper = async (
     {
       headers: {
         ...getToken().headers,
-        "Content-Type": "multipart/form-data",
       },
     }
   );
@@ -60,6 +59,23 @@ export const deleteQuestionPaper = async (id: string) => {
   const response = await api.delete(
     `/question-papers/${id}`,
     getToken()
+  );
+
+  return response.data;
+};
+
+export const parseQuestionPaper = async (
+  form: FormData,
+) => {
+  const response = await api.post(
+    "/question-papers/parse",
+    form,
+    {
+    headers: {
+  ...getToken().headers,
+  "Content-Type": "multipart/form-data",
+},
+    },
   );
 
   return response.data;

@@ -140,7 +140,10 @@ const Questions = () => {
                       size="small"
                       variant="contained"
                       color="info"
-                      sx={{mr: 1}}>
+                      sx={{mr: 1}}
+                      onClick={() =>
+                        navigate(`/questions/view/${question._id}`)
+                      }>
                       View
                     </Button>
 
@@ -148,7 +151,10 @@ const Questions = () => {
                       size="small"
                       variant="contained"
                       color="warning"
-                      sx={{mr: 1}}>
+                      sx={{mr: 1}}
+                      onClick={() =>
+                        navigate(`/questions/edit/${question._id}`)
+                      }>
                       Edit
                     </Button>
 

@@ -1,66 +1,94 @@
 import Exam, { IExam } from "../models/exam.model";
 
-// Create Exam
+// =====================================================
+// CREATE EXAM
+// =====================================================
+
 export const createExam = async (
-  data: Partial<IExam>
+  data: Partial<IExam>,
 ) => {
   return await Exam.create(data);
 };
 
-// Get All Exams
+// =====================================================
+// GET ALL EXAMS
+// =====================================================
+
 export const getAllExams = async () => {
   return await Exam.find()
-    .populate("questionPaper");
+    .populate("questionPaperId", "title")
+    .sort({createdAt: -1});
 };
 
-// Get Exam By ID
+// =====================================================
+// GET EXAM BY ID
+// =====================================================
+
 export const getExamById = async (
-  id: string
+  id: string,
 ) => {
   return await Exam.findById(id)
-    .populate("questionPaper");
+    .populate("questionPaperId", "title");
 };
 
-// Update Exam
+// =====================================================
+// UPDATE EXAM
+// =====================================================
+
 export const updateExam = async (
   id: string,
-  data: Partial<IExam>
+  data: Partial<IExam>,
 ) => {
   return await Exam.findByIdAndUpdate(
     id,
     data,
     {
       new: true,
-    }
-  );
+      runValidators: true,
+    },
+  )
+    .populate("questionPaperId", "title");
 };
+// =====================================================
+// DELETE EXAM
+// =====================================================
 
-// Delete Exam
 export const deleteExam = async (
-  id: string
+  id: string,
 ) => {
   return await Exam.findByIdAndDelete(id);
 };
 
-// Get Published Exam By ID
+// =====================================================
+// GET PUBLISHED EXAM
+// =====================================================
+
 export const getPublishedExamById = async (
-  id: string
+  id: string,
 ) => {
   return await Exam.findOne({
     _id: id,
     status: "Published",
-  }).populate("questionPaper");
+  }).populate("questionPaperId", "title");
 };
 
-// Validate Exam Time
-export const validateExamTime = (
-  exam: IExam
-) => {
+// =====================================================
+// VALIDATE EXAM TIME
+// =====================================================
 
+export const validateExamTime = (
+  exam: IExam,
+) => {
   const now = new Date();
 
   if (exam.status !== "Published") {
     throw new Error("Exam is not published");
+  }
+
+  if (!exam.startDate || !exam.endDate) {
+    throw new Error(
+      "Exam start date and end date are not configured",
+    );
   }
 
   if (now < exam.startDate) {

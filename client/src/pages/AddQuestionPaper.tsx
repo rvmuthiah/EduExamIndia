@@ -8,7 +8,12 @@ import {
   Button,
 } from "@mui/material";
 
-import {createQuestionPaper} from "../services/questionPaper.service";
+import {
+  createQuestionPaper,
+  parseQuestionPaper,
+} from "../services/questionPaper.service";
+
+
 
 const AddQuestionPaper = () => {
   const [formData, setFormData] = useState({
@@ -60,9 +65,35 @@ const AddQuestionPaper = () => {
 
       const response = await createQuestionPaper(form);
 
-      console.log("Response:", response);
+      console.log("QUESTION PAPER CREATED:", response);
 
-      alert("Question Paper Uploaded Successfully!");
+      if (!response.success || !response.data?._id) {
+        throw new Error("Question Paper ID was not returned");
+      }
+
+      const questionPaperId = response.data._id;
+
+      console.log("QUESTION PAPER ID:", questionPaperId);
+
+      // ======================================
+      // PARSE PDF → MCQ → REVIEW
+      // ======================================
+
+      const parseForm = new FormData();
+
+      parseForm.append("pdf", pdfFile);
+
+      parseForm.append("questionPaperId", questionPaperId);
+
+      const parseResponse = await parseQuestionPaper(parseForm);
+
+      console.log("PDF PARSE RESPONSE:", parseResponse);
+
+      if (!parseResponse.success) {
+        throw new Error(parseResponse.message || "Failed to parse PDF");
+      }
+
+      alert("Question Paper uploaded and converted to MCQs successfully!");
 
       // Reset form
       setFormData({
