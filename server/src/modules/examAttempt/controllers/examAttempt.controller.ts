@@ -69,12 +69,19 @@ export const startExam = async (
     }
 
     // Create Attempt
-    const attempt =
-      await createExamAttempt({
-        studentId,
-        examId,
-      });
+    const startedAt = new Date();
 
+const endsAt = new Date(
+  startedAt.getTime() +
+    (exam.durationMinutes ?? 0) * 60 * 1000
+);
+
+const attempt = await createExamAttempt({
+  studentId,
+  examId,
+  startedAt,
+  endsAt,
+});
     res.status(201).json({
       success: true,
       message: "Exam Started Successfully",

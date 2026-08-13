@@ -2,7 +2,7 @@ import StudentAnswer, {
   IStudentAnswer,
 } from "../models/studentAnswer.model";
 
-// Save Answer
+// Create Answer
 export const createStudentAnswer = async (
   data: Partial<IStudentAnswer>
 ) => {
@@ -13,7 +13,8 @@ export const createStudentAnswer = async (
 export const getAllStudentAnswers = async () => {
   return await StudentAnswer.find()
     .populate("attemptId")
-    .populate("questionId");
+    .populate("questionId")
+    .sort({ createdAt: -1 });
 };
 
 // Get Answer By ID
@@ -55,6 +56,7 @@ export const updateStudentAnswer = async (
     data,
     {
       new: true,
+      runValidators: true,
     }
   );
 };

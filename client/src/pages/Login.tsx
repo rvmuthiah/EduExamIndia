@@ -11,36 +11,28 @@ const Login = () => {
 
   const handleLogin = async () => {
     try {
-      // const response = await login(username, password);
-
-      // localStorage.setItem("token", response.data.data.token);
-
-      // localStorage.setItem("username", response.data.data.username);
-
-      // alert("Login Successful");
-
-      // navigate("/dashboard");
-
       const response = await login(username, password);
 
-      
-      console.log(response);
+      console.log("ADMIN LOGIN RESPONSE:", response.data);
 
       const {token, username: loggedInUser} = response.data;
 
-      localStorage.setItem("adminToken", token);
+      // Clear any old student authentication
+      localStorage.removeItem("studentId");
+
+      // Store admin authentication consistently
+      localStorage.setItem("token", token);
       localStorage.setItem("username", loggedInUser);
       localStorage.setItem("role", "Admin");
 
-        alert("Login Successful");
+      alert("Login Successful");
 
       navigate("/dashboard");
     } catch (error: unknown) {
-      console.error(error);
+      console.error("ADMIN LOGIN ERROR:", error);
 
       if (error instanceof AxiosError) {
         alert(error.response?.data?.message || "Login Failed");
-
       } else {
         alert("Something went wrong");
       }

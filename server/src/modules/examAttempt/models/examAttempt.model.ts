@@ -5,13 +5,12 @@ export interface IExamAttempt extends Document {
   examId: mongoose.Types.ObjectId;
 
   startedAt: Date;
+  endsAt: Date;
   submittedAt?: Date;
 
   score: number;
-
   totalMarks: number;
-
-  status: string;
+  status: "In Progress" | "Submitted" | "Completed";
 }
 
 const ExamAttemptSchema = new Schema(
@@ -32,6 +31,11 @@ const ExamAttemptSchema = new Schema(
       type: Date,
       default: Date.now,
     },
+
+    endsAt: {
+  type: Date,
+  required: true,
+},
 
     submittedAt: {
       type: Date,

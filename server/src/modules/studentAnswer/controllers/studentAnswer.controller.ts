@@ -9,6 +9,9 @@ import {
   updateStudentAnswer,
   deleteStudentAnswer,
 } from "../services/studentAnswer.service";
+import {
+  getExamAttemptById,
+} from "../../examAttempt/services/examAttempt.service";
 
 // Auto Save Answer
 export const saveAnswer = async (
@@ -22,7 +25,53 @@ export const saveAnswer = async (
       selectedAnswer,
     } = req.body;
 
-    // Check if already answered
+    // ==========================================
+    // CHECK EXAM ATTEMPT
+    // ==========================================
+
+    const attempt = await getExamAttemptById(
+      attemptId
+    );
+
+    if (!attempt) {
+      res.status(404).json({
+        success: false,
+        message: "Exam Attempt Not Found",
+      });
+      return;
+    }
+
+    // ==========================================
+    // CHECK ATTEMPT STATUS
+    // ==========================================
+
+    if (attempt.status !== "In Progress") {
+      res.status(400).json({
+        success: false,
+        message: "Exam is no longer active",
+      });
+      return;
+    }
+
+    // ==========================================
+    // CHECK EXAM TIME
+    // ==========================================
+
+    if (
+      new Date() >=
+      new Date(attempt.endsAt)
+    ) {
+      res.status(400).json({
+        success: false,
+        message: "Exam has already ended",
+      });
+      return;
+    }
+
+    // ==========================================
+    // CHECK EXISTING ANSWER
+    // ==========================================
+
     const existingAnswer =
       await getStudentAnswer(
         attemptId,
@@ -30,20 +79,26 @@ export const saveAnswer = async (
       );
 
     if (existingAnswer) {
-      const updated = await updateStudentAnswer(
-  String(existingAnswer._id),
-  {
-    selectedAnswer,
-  }
-);
+      const updated =
+        await updateStudentAnswer(
+          String(existingAnswer._id),
+          {
+            selectedAnswer,
+          }
+        );
 
       res.json({
         success: true,
         message: "Answer Updated",
         data: updated,
       });
+
       return;
     }
+
+    // ==========================================
+    // CREATE ANSWER
+    // ==========================================
 
     const answer =
       await createStudentAnswer({
@@ -57,15 +112,18 @@ export const saveAnswer = async (
       message: "Answer Saved",
       data: answer,
     });
-  } catch (error) {
-  console.error("SAVE ANSWER ERROR:", error);
 
-  res.status(500).json({
-    success: false,
-    message: "Internal Server Error",
-    error,
-  });
-}
+  } catch (error) {
+    console.error(
+      "SAVE ANSWER ERROR:",
+      error
+    );
+
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
 };
 
 // Get All Answers

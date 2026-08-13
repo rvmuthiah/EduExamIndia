@@ -18,6 +18,7 @@ import {
 import {getExam} from "../services/exam.service";
 import {startExamAttempt} from "../services/examAttempt.service";
 import {getQuestionsForExam} from "../services/question.service";
+import {saveStudentAnswer} from "../services/studentAnswer.service";
 
 // =====================================================
 // EXAM INTERFACE
@@ -240,18 +241,31 @@ const TakeExam = () => {
   // SELECT ANSWER
   // =====================================================
 
-  const handleAnswerChange = (answer: Answer) => {
-    const question = questions[currentQuestion];
+const handleAnswerChange = async (answer: Answer) => {
+  const question = questions[currentQuestion];
 
-    if (!question) {
-      return;
-    }
+  if (!question || !attemptId) {
+    return;
+  }
 
-    setAnswers(previous => ({
-      ...previous,
-      [question._id]: answer,
-    }));
-  };
+  // Update UI immediately
+  setAnswers(previous => ({
+    ...previous,
+    [question._id]: answer,
+  }));
+
+  try {
+    const response = await saveStudentAnswer({
+      attemptId,
+      questionId: question._id,
+      selectedAnswer: answer,
+    });
+
+    console.log("STUDENT ANSWER SAVED:", response);
+  } catch (error) {
+    console.error("SAVE STUDENT ANSWER ERROR:", error);
+  }
+};
 
   // =====================================================
   // NEXT QUESTION
@@ -545,12 +559,26 @@ const TakeExam = () => {
               Previous
             </Button>
 
-            <Button
-              variant="contained"
-              disabled={currentQuestion === questions.length - 1}
-              onClick={handleNext}>
-              Next
-            </Button>
+            {currentQuestion < questions.length - 1 ? (
+              <Button
+                variant="contained"
+                onClick={handleNext}>
+                Next
+              </Button>
+            ) : (
+              <Button
+                variant="contained"
+                color="success"
+                onClick={() => {
+                  console.log("SUBMIT EXAM:", {
+                    examId,
+                    attemptId,
+                    answers,
+                  });
+                }}>
+                Submit Exam
+              </Button>
+            )}
           </Box>
         </CardContent>
       </Card>
