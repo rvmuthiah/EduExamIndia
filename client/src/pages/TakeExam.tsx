@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 
 import {getExam} from "../services/exam.service";
-import {startExamAttempt} from "../services/examAttempt.service";
+import {startExamAttempt, submitExam} from "../services/examAttempt.service";
 import {getQuestionsForExam} from "../services/question.service";
 import {saveStudentAnswer} from "../services/studentAnswer.service";
 
@@ -114,7 +114,6 @@ const TakeExam = () => {
           return;
         }
 
-        
         // -------------------------------------------------
         // GET EXAM
         // -------------------------------------------------
@@ -144,9 +143,14 @@ const TakeExam = () => {
         // START / RECOVER ATTEMPT
         // -------------------------------------------------
 
+        console.log("BEFORE START EXAM ATTEMPT:", {
+          studentId,
+          examId,
+        });
+
         const attemptResponse = await startExamAttempt(studentId, examId);
 
-        console.log("EXAM ATTEMPT RESPONSE:", attemptResponse);
+        console.log("AFTER START EXAM ATTEMPT:", attemptResponse);
 
         if (!attemptResponse.success || !attemptResponse.data) {
           setError(attemptResponse.message || "Unable to start exam.");
@@ -241,31 +245,79 @@ const TakeExam = () => {
   // SELECT ANSWER
   // =====================================================
 
-const handleAnswerChange = async (answer: Answer) => {
-  const question = questions[currentQuestion];
+  const handleAnswerChange = async (answer: Answer) => {
+    const question = questions[currentQuestion];
 
-  if (!question || !attemptId) {
-    return;
-  }
+    if (!question || !attemptId) {
+      return;
+    }
 
-  // Update UI immediately
-  setAnswers(previous => ({
-    ...previous,
-    [question._id]: answer,
-  }));
+    // Update UI immediately
+    setAnswers(previous => ({
+      ...previous,
+      [question._id]: answer,
+    }));
 
-  try {
-    const response = await saveStudentAnswer({
-      attemptId,
-      questionId: question._id,
-      selectedAnswer: answer,
-    });
+    try {
+      const response = await saveStudentAnswer({
+        attemptId,
+        questionId: question._id,
+        selectedAnswer: answer,
+      });
 
-    console.log("STUDENT ANSWER SAVED:", response);
-  } catch (error) {
-    console.error("SAVE STUDENT ANSWER ERROR:", error);
-  }
-};
+      console.log("STUDENT ANSWER SAVED:", response);
+    } catch (error) {
+      console.error("SAVE STUDENT ANSWER ERROR:", error);
+    }
+  };
+
+  // =====================================================
+  // SUBMIT EXAM
+  // =====================================================
+
+  const handleSubmit = async () => {
+    if (!attemptId) {
+      setError("Exam attempt not found.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError("");
+
+      console.log("SUBMITTING EXAM:", {
+        examId,
+        attemptId,
+      });
+
+      const response = await submitExam(attemptId);
+
+      console.log(
+        "SUBMIT EXAM RESPONSE JSON:",
+        JSON.stringify(response, null, 2),
+      );
+
+      if (!response.success) {
+        setError(response.message || "Unable to submit exam.");
+        return;
+      }
+
+      // Evaluation completed successfully
+      console.log(
+        "EXAM EVALUATED JSON:",
+        JSON.stringify(response.result, null, 2),
+      );
+
+      // Temporary navigation
+      navigate(`/student/result/${attemptId}`);
+    } catch (error: unknown) {
+      console.error("SUBMIT EXAM ERROR:", error);
+
+      setError("Unable to submit exam. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // =====================================================
   // NEXT QUESTION
@@ -569,14 +621,9 @@ const handleAnswerChange = async (answer: Answer) => {
               <Button
                 variant="contained"
                 color="success"
-                onClick={() => {
-                  console.log("SUBMIT EXAM:", {
-                    examId,
-                    attemptId,
-                    answers,
-                  });
-                }}>
-                Submit Exam
+                onClick={handleSubmit}
+                disabled={loading}>
+                {loading ? "Submitting..." : "Submit Exam"}
               </Button>
             )}
           </Box>

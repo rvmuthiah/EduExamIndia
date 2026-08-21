@@ -59,4 +59,13 @@ app.use("/api/leaderboard", leaderboardRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 
 
+app.use(express.urlencoded({ extended: true }));
+
+console.log("APP INITIALIZED");
+
+app.get("/", (req, res) => {
+  console.log("ROOT REQUEST RECEIVED");
+  res.send("Welcome to EduExam India (RankOne) Backend 🚀");
+});
+
 export default app;

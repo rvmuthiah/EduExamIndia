@@ -29,6 +29,10 @@ import EditExam from "../pages/EditExam";
 import StudentLayout from "../layouts/StudentLayout";
 import StudentExams from "../pages/StudentExams";
 import TakeExam from "../pages/TakeExam";
+import StudentResult from "../pages/StudentResult";
+import StudentResultHistory from "../pages/StudentResultHistory";
+
+
 
 const AppRoutes = () => {
   return (
@@ -153,6 +157,14 @@ const AppRoutes = () => {
         <Route
           path="/student/exams/:id"
           element={<TakeExam />}
+        />
+        <Route
+          path="/student/results"
+          element={<StudentResultHistory />}
+        />
+        <Route
+          path="/student/result/:attemptId"
+          element={<StudentResult />}
         />
       </Route>
     </Routes>

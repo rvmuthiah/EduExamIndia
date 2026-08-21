@@ -66,7 +66,7 @@ export const getStudentAttempts = async (
 export const submitExam = async (
   attemptId: string,
 ) => {
-  const response = await axios.post(
+  const response = await axios.put(
     `${API_URL}/${attemptId}/submit`,
     {},
     getToken(),

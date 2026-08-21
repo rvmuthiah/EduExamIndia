@@ -42,6 +42,9 @@ export const getStudentExamAttempt = async (
   return await ExamAttempt.findOne({
     studentId,
     examId,
+    status: "In Progress",
+  }).sort({
+    createdAt: -1,
   });
 };
 
