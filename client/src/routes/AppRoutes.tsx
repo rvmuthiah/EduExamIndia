@@ -32,15 +32,55 @@ import TakeExam from "../pages/TakeExam";
 import StudentResult from "../pages/StudentResult";
 import StudentResultHistory from "../pages/StudentResultHistory";
 
-
+import Home from "../pages/public/Home";
+import Boards from "../pages/public/Boards";
+import Standards from "../pages/public/Standards";
+import ExamTimetable from "../pages/public/ExamTimetable";
+import ExamSchedule from "../pages/public/ExamSchedule";
 
 const AppRoutes = () => {
   return (
     <Routes>
-      {/* ================= ADMIN LOGIN ================= */}
+      {/* ================= PUBLIC WEBSITE ================= */}
 
       <Route
         path="/"
+        element={<Home />}
+      />
+
+      <Route
+        path="/home"
+        element={<Home />}
+      />
+      <Route
+        path="/boards"
+        element={<Boards />}
+      />
+
+      <Route
+        path="/standards"
+        element={<Standards />}
+      />
+
+      <Route
+        path="/exam-timetable"
+        element={<ExamTimetable />}
+      />
+
+      <Route
+        path="/exam-schedule"
+        element={<ExamSchedule />}
+      />
+
+      {/* ================= ADMIN LOGIN ================= */}
+
+      <Route
+        path="/admin/login"
+        element={<Login />}
+      />
+
+      <Route
+        path="/login"
         element={<Login />}
       />
 
@@ -158,10 +198,12 @@ const AppRoutes = () => {
           path="/student/exams/:id"
           element={<TakeExam />}
         />
+
         <Route
           path="/student/results"
           element={<StudentResultHistory />}
         />
+
         <Route
           path="/student/result/:attemptId"
           element={<StudentResult />}

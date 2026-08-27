@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
 
 import {
@@ -66,24 +66,26 @@ type Answer = "A" | "B" | "C" | "D";
 
 const TakeExam = () => {
   const {id: examId} = useParams<{id: string}>();
-
   const navigate = useNavigate();
 
   const [exam, setExam] = useState<Exam | null>(null);
-
   const [questions, setQuestions] = useState<Question[]>([]);
-
   const [answers, setAnswers] = useState<Record<string, Answer>>({});
 
   const [currentQuestion, setCurrentQuestion] = useState(0);
-
   const [attemptId, setAttemptId] = useState<string | null>(null);
 
   const [loading, setLoading] = useState(true);
-
   const [error, setError] = useState("");
 
   const [timeLeft, setTimeLeft] = useState(0);
+  const [savingAnswer, setSavingAnswer] = useState(false);
+
+  // =====================================================
+  // TRACK LAST ANSWER SAVE REQUEST
+  // =====================================================
+
+  const lastAnswerSaveRef = useRef<Promise<void> | null>(null);
 
   // =====================================================
   // LOAD EXAM
@@ -101,10 +103,6 @@ const TakeExam = () => {
         setLoading(true);
         setError("");
 
-        // -------------------------------------------------
-        // GET STUDENT ID
-        // -------------------------------------------------
-
         const studentId = localStorage.getItem("studentId") || "";
 
         console.log("CURRENT STUDENT ID:", studentId);
@@ -114,9 +112,9 @@ const TakeExam = () => {
           return;
         }
 
-        // -------------------------------------------------
+        // =================================================
         // GET EXAM
-        // -------------------------------------------------
+        // =================================================
 
         const examResponse = await getExam(examId);
 
@@ -131,17 +129,17 @@ const TakeExam = () => {
 
         setExam(examData);
 
-        // -------------------------------------------------
-        // SET TIMER
-        // -------------------------------------------------
+        // =================================================
+        // TIMER
+        // =================================================
 
         const duration = examData.durationMinutes ?? 0;
 
         setTimeLeft(duration * 60);
 
-        // -------------------------------------------------
+        // =================================================
         // START / RECOVER ATTEMPT
-        // -------------------------------------------------
+        // =================================================
 
         console.log("BEFORE START EXAM ATTEMPT:", {
           studentId,
@@ -159,9 +157,9 @@ const TakeExam = () => {
 
         setAttemptId(attemptResponse.data._id);
 
-        // -------------------------------------------------
+        // =================================================
         // LOAD QUESTIONS
-        // -------------------------------------------------
+        // =================================================
 
         const questionResponse = await getQuestionsForExam(examId);
 
@@ -234,41 +232,64 @@ const TakeExam = () => {
   // =====================================================
 
   const minutes = Math.floor(timeLeft / 60);
-
   const seconds = timeLeft % 60;
 
-  const formattedTime = `${String(minutes).padStart(2, "0")}:${String(
-    seconds,
-  ).padStart(2, "0")}`;
+  const formattedTime = `${String(minutes).padStart(
+    2,
+    "0",
+  )}:${String(seconds).padStart(2, "0")}`;
+
+  // =====================================================
+  // ANSWER COUNT
+  // =====================================================
+
+  const answeredCount = Object.keys(answers).length;
+
+  const allQuestionsAnswered =
+    questions.length > 0 && answeredCount === questions.length;
 
   // =====================================================
   // SELECT ANSWER
   // =====================================================
 
-  const handleAnswerChange = async (answer: Answer) => {
+  const handleAnswerChange = (answer: Answer) => {
     const question = questions[currentQuestion];
 
     if (!question || !attemptId) {
       return;
     }
 
-    // Update UI immediately
+    // =================================================
+    // UPDATE UI IMMEDIATELY
+    // =================================================
+
     setAnswers(previous => ({
       ...previous,
       [question._id]: answer,
     }));
 
-    try {
-      const response = await saveStudentAnswer({
-        attemptId,
-        questionId: question._id,
-        selectedAnswer: answer,
+    // =================================================
+    // SAVE ANSWER
+    // =================================================
+
+    setSavingAnswer(true);
+
+    const saveRequest = saveStudentAnswer({
+      attemptId,
+      questionId: question._id,
+      selectedAnswer: answer,
+    })
+      .then(response => {
+        console.log("STUDENT ANSWER SAVED:", response);
+      })
+      .catch(error => {
+        console.error("SAVE STUDENT ANSWER ERROR:", error);
+      })
+      .finally(() => {
+        setSavingAnswer(false);
       });
 
-      console.log("STUDENT ANSWER SAVED:", response);
-    } catch (error) {
-      console.error("SAVE STUDENT ANSWER ERROR:", error);
-    }
+    lastAnswerSaveRef.current = saveRequest;
   };
 
   // =====================================================
@@ -281,6 +302,31 @@ const TakeExam = () => {
       return;
     }
 
+    // =================================================
+    // CHECK ALL QUESTIONS ANSWERED
+    // =================================================
+
+    if (!allQuestionsAnswered) {
+      setError(
+        `Please answer all questions before submitting. ${answeredCount}/${questions.length} answered.`,
+      );
+      return;
+    }
+
+    // =================================================
+    // WAIT FOR LAST ANSWER SAVE
+    // =================================================
+
+    if (lastAnswerSaveRef.current) {
+      setSavingAnswer(true);
+
+      try {
+        await lastAnswerSaveRef.current;
+      } finally {
+        setSavingAnswer(false);
+      }
+    }
+
     try {
       setLoading(true);
       setError("");
@@ -288,7 +334,13 @@ const TakeExam = () => {
       console.log("SUBMITTING EXAM:", {
         examId,
         attemptId,
+        answeredCount,
+        totalQuestions: questions.length,
       });
+
+      // =================================================
+      // SUBMIT EXAM
+      // =================================================
 
       const response = await submitExam(attemptId);
 
@@ -302,13 +354,15 @@ const TakeExam = () => {
         return;
       }
 
-      // Evaluation completed successfully
+      // =================================================
+      // EVALUATION
+      // =================================================
+
       console.log(
         "EXAM EVALUATED JSON:",
         JSON.stringify(response.result, null, 2),
       );
 
-      // Temporary navigation
       navigate(`/student/result/${attemptId}`);
     } catch (error: unknown) {
       console.error("SUBMIT EXAM ERROR:", error);
@@ -438,7 +492,9 @@ const TakeExam = () => {
         maxWidth: "1000px",
         margin: "0 auto",
       }}>
-      {/* EXAM HEADER */}
+      {/* =================================================
+          EXAM HEADER
+          ================================================= */}
 
       <Card sx={{mb: 3}}>
         <CardContent>
@@ -498,6 +554,7 @@ const TakeExam = () => {
             sx={{
               display: "flex",
               justifyContent: "space-between",
+              alignItems: "center",
               flexWrap: "wrap",
               gap: 1,
             }}>
@@ -506,11 +563,23 @@ const TakeExam = () => {
             </Typography>
 
             <Typography>Marks: {question.marks ?? 1}</Typography>
+
+            {/* ANSWER COUNT */}
+
+            <Typography
+              sx={{
+                fontWeight: "bold",
+                color: allQuestionsAnswered ? "success.main" : "warning.main",
+              }}>
+              Answered: {answeredCount}/{questions.length}
+            </Typography>
           </Box>
         </CardContent>
       </Card>
 
-      {/* QUESTION */}
+      {/* =================================================
+          QUESTION
+          ================================================= */}
 
       <Card>
         <CardContent>
@@ -596,17 +665,21 @@ const TakeExam = () => {
             </RadioGroup>
           </FormControl>
 
-          {/* NAVIGATION */}
+          {/* =================================================
+              NAVIGATION
+              ================================================= */}
 
           <Box
             sx={{
               display: "flex",
               justifyContent: "space-between",
+              alignItems: "center",
               mt: 4,
+              gap: 2,
             }}>
             <Button
               variant="outlined"
-              disabled={currentQuestion === 0}
+              disabled={currentQuestion === 0 || savingAnswer}
               onClick={handlePrevious}>
               Previous
             </Button>
@@ -614,23 +687,50 @@ const TakeExam = () => {
             {currentQuestion < questions.length - 1 ? (
               <Button
                 variant="contained"
+                disabled={savingAnswer}
                 onClick={handleNext}>
-                Next
+                {savingAnswer ? "Saving..." : "Next"}
               </Button>
             ) : (
               <Button
                 variant="contained"
                 color="success"
                 onClick={handleSubmit}
-                disabled={loading}>
-                {loading ? "Submitting..." : "Submit Exam"}
+                disabled={loading || savingAnswer || !allQuestionsAnswered}>
+                {loading
+                  ? "Submitting..."
+                  : savingAnswer
+                    ? "Saving Answer..."
+                    : allQuestionsAnswered
+                      ? "Submit Exam"
+                      : `Answer All Questions (${answeredCount}/${questions.length})`}
               </Button>
             )}
           </Box>
+
+          {/* =================================================
+              SUBMIT INFORMATION
+              ================================================= */}
+
+          {!allQuestionsAnswered &&
+            currentQuestion === questions.length - 1 && (
+              <Typography
+                align="center"
+                color="warning.main"
+                sx={{
+                  mt: 2,
+                  fontWeight: 600,
+                }}>
+                Please answer all {questions.length} questions before
+                submitting.
+              </Typography>
+            )}
         </CardContent>
       </Card>
 
-      {/* DEBUG */}
+      {/* =================================================
+          DEBUG
+          ================================================= */}
 
       <Box sx={{mt: 2}}>
         <Typography
