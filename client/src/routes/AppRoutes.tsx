@@ -27,10 +27,16 @@ import ViewExam from "../pages/ViewExam";
 import EditExam from "../pages/EditExam";
 
 import StudentLayout from "../layouts/StudentLayout";
+import StudentProtectedRoute from "./StudentProtectedRoute";
+import StudentDashboard from "../pages/StudentDashboard";
+
 import StudentExams from "../pages/StudentExams";
 import TakeExam from "../pages/TakeExam";
 import StudentResult from "../pages/StudentResult";
 import StudentResultHistory from "../pages/StudentResultHistory";
+import StudentRegistration from "../pages/StudentRegistration";
+import StudentProfile from "../pages/StudentProfile";
+import StudentLeaderboard from "../pages/StudentLeaderboard";
 
 import Home from "../pages/public/Home";
 import Boards from "../pages/public/Boards";
@@ -186,28 +192,62 @@ const AppRoutes = () => {
         element={<StudentLogin />}
       />
 
-      {/* ================= STUDENT ================= */}
+      <Route
+        path="/student/register"
+        element={<StudentRegistration />}
+      />
 
-      <Route element={<StudentLayout />}>
-        <Route
-          path="/student/exams"
-          element={<StudentExams />}
-        />
+      {/* ================= PROTECTED STUDENT AREA ================= */}
 
-        <Route
-          path="/student/exams/:id"
-          element={<TakeExam />}
-        />
+      <Route element={<StudentProtectedRoute />}>
+        <Route element={<StudentLayout />}>
+          {/* Student Exams */}
 
-        <Route
-          path="/student/results"
-          element={<StudentResultHistory />}
-        />
+          <Route
+            path="/student/dashboard"
+            element={<StudentDashboard />}
+          />
 
-        <Route
-          path="/student/result/:attemptId"
-          element={<StudentResult />}
-        />
+          <Route
+            path="/student/exams"
+            element={<StudentExams />}
+          />
+
+          {/* Take Exam */}
+
+          <Route
+            path="/student/exams/:id"
+            element={<TakeExam />}
+          />
+
+          {/* Result History */}
+
+          <Route
+            path="/student/results"
+            element={<StudentResultHistory />}
+          />
+
+          {/* Individual Result */}
+
+          <Route
+            path="/student/results/:attemptId"
+            element={<StudentResult />}
+          />
+
+          {/* Student Profile */}
+
+          <Route
+            path="/student/profile"
+            element={<StudentProfile />}
+          />
+
+          {/* Student Leaderboard */}
+
+          <Route
+            path="/student/leaderboard"
+            element={<StudentLeaderboard />}
+          />
+        </Route>
       </Route>
     </Routes>
   );

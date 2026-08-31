@@ -38,3 +38,22 @@ export const getStudentResults = async (
 
   return response.data;
 };
+
+// =====================================================
+// GET LEADERBOARD
+// =====================================================
+
+export const getLeaderboard = async (
+  examId?: string
+) => {
+  const url = examId
+    ? `${API_URL}/leaderboard?examId=${examId}`
+    : `${API_URL}/leaderboard`;
+
+  const response = await axios.get(
+    url,
+    getToken()
+  );
+
+  return response.data;
+};

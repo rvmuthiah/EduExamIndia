@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import {Request, Response} from "express";
 
 import {
   getAllResults,
@@ -6,6 +6,7 @@ import {
   getResultByAttempt,
   getStudentResults,
   deleteResult,
+  getLeaderboard,
 } from "../services/result.service";
 
 // Get All Results
@@ -146,6 +147,39 @@ export const removeResult = async (
     res.status(500).json({
       success: false,
       message: "Internal Server Error",
+    });
+  }
+};
+
+// =====================================================
+// GET LEADERBOARD
+// =====================================================
+
+export const leaderboard = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const examId =
+      typeof req.query.examId === "string"
+        ? req.query.examId
+        : undefined;
+
+    const results = await getLeaderboard(examId);
+
+    res.status(200).json({
+      success: true,
+      data: results,
+    });
+  } catch (error) {
+    console.error(
+      "LEADERBOARD ERROR:",
+      error
+    );
+
+    res.status(500).json({
+      success: false,
+      message: "Unable to load leaderboard",
     });
   }
 };

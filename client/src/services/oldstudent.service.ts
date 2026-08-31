@@ -1,7 +1,6 @@
 import axios from "axios";
 
-const API_URL =
-  "http://localhost:5000/api/students";
+const API_URL = "http://localhost:5000/api/students";
 
 // =====================================================
 // STUDENT DATA TYPE
@@ -22,21 +21,6 @@ export interface StudentData {
 }
 
 // =====================================================
-// GET TOKEN
-// =====================================================
-
-const getToken = () => {
-  const token =
-    localStorage.getItem("token");
-
-  return {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
-};
-
-// =====================================================
 // CREATE / REGISTER STUDENT
 // =====================================================
 
@@ -47,28 +31,7 @@ export const createStudent = async (
     `${API_URL}/register`,
     {
       ...studentData,
-      standard: Number(
-        studentData.standard
-      ),
-    }
-  );
-
-  return response.data;
-};
-
-// =====================================================
-// STUDENT LOGIN
-// =====================================================
-
-export const studentLogin = async (
-  username: string,
-  password: string
-) => {
-  const response = await axios.post(
-    `${API_URL}/login`,
-    {
-      username,
-      password,
+      standard: Number(studentData.standard),
     }
   );
 
@@ -80,10 +43,7 @@ export const studentLogin = async (
 // =====================================================
 
 export const getStudents = async () => {
-  const response = await axios.get(
-    API_URL,
-    getToken()
-  );
+  const response = await axios.get(API_URL);
 
   return response.data;
 };
@@ -96,23 +56,26 @@ export const getStudentById = async (
   id: string
 ) => {
   const response = await axios.get(
-    `${API_URL}/${id}`,
-    getToken()
+    `${API_URL}/${id}`
   );
 
   return response.data;
 };
 
 // =====================================================
-// ALIAS
+// GET STUDENT
+// Used by EditStudent.tsx
 // =====================================================
-//
-// EditStudent previously used getStudent.
-// Keep this alias so we don't break that page.
-//
 
-export const getStudent =
-  getStudentById;
+export const getStudent = async (
+  id: string
+) => {
+  const response = await axios.get(
+    `${API_URL}/${id}`
+  );
+
+  return response.data;
+};
 
 // =====================================================
 // UPDATE STUDENT
@@ -120,15 +83,11 @@ export const getStudent =
 
 export const updateStudent = async (
   id: string,
-  studentData: Record<
-    string,
-    unknown
-  >
+  studentData: Record<string, unknown>
 ) => {
   const response = await axios.put(
     `${API_URL}/${id}`,
-    studentData,
-    getToken()
+    studentData
   );
 
   return response.data;
@@ -142,24 +101,8 @@ export const deleteStudent = async (
   id: string
 ) => {
   const response = await axios.delete(
-    `${API_URL}/${id}`,
-    getToken()
+    `${API_URL}/${id}`
   );
 
   return response.data;
 };
-
-// =====================================================
-// GET STUDENT LEADERBOARD
-// =====================================================
-
-export const getStudentLeaderboard =
-  async () => {
-    const response =
-      await axios.get(
-        `${API_URL}/leaderboard`,
-        getToken()
-      );
-
-    return response.data;
-  };

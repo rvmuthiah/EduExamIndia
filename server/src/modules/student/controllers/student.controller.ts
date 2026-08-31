@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import bcrypt from "bcrypt";
 
 import {
   createStudent,
@@ -9,59 +8,176 @@ import {
   deleteStudent,
   getStudentByEmail,
   generateStudentToken,
+  getStudentLeaderboard,
 } from "../services/student.service";
 
-// Register Student
+import bcrypt from "bcryptjs";
+
+// =====================================================
+// STUDENT REGISTRATION
+// =====================================================
+
 export const registerStudent = async (
   req: Request,
   res: Response
 ): Promise<void> => {
   try {
+    console.log("STUDENT REGISTRATION BODY:", req.body);
+
     const student = await createStudent(req.body);
 
-    // Remove password before sending response
-   const studentObj = student.toObject();
+    const studentObject = student.toObject();
 
-// Remove password from response
-const { password, ...studentData } = studentObj;
+    const { password, ...studentData } = studentObject;
 
-res.status(201).json({
-  success: true,
-  message: "Student Registered Successfully",
-  data: studentData,
-});
-  } catch (error) {
-    console.error(error);
+    res.status(201).json({
+      success: true,
+      message: "Student Registered Successfully",
+      data: studentData,
+    });
+  } catch (error: unknown) {
+    console.error("STUDENT REGISTRATION ERROR:", error);
 
-    res.status(500).json({
+    if (
+      error &&
+      typeof error === "object" &&
+      "code" in error &&
+      (error as { code?: number }).code === 11000
+    ) {
+      res.status(409).json({
+        success: false,
+        message: "Email or Mobile number already registered",
+      });
+
+      return;
+    }
+
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Unable to register student";
+
+    res.status(400).json({
       success: false,
-      message: "Internal Server Error",
+      message,
     });
   }
 };
 
-// Get All Students
-export const getStudents = async (
+// =====================================================
+// STUDENT LOGIN
+// =====================================================
+
+export const loginStudent = async (
   req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { username, password } = req.body;
+
+    if (!username || !password) {
+      res.status(400).json({
+        success: false,
+        message: "Username and password are required",
+      });
+
+      return;
+    }
+
+    const Student = (
+      await import("../models/student.model")
+    ).default;
+
+    const student =
+      (await getStudentByEmail(username.trim())) ||
+      (await Student.findOne({
+        mobile: username.trim(),
+      }));
+
+    if (!student) {
+      res.status(401).json({
+        success: false,
+        message: "Invalid username or password",
+      });
+
+      return;
+    }
+
+    if (student.status !== "Active") {
+      res.status(403).json({
+        success: false,
+        message: "Student account is inactive",
+      });
+
+      return;
+    }
+
+    const passwordMatch = await bcrypt.compare(
+      password,
+      student.password
+    );
+
+    if (!passwordMatch) {
+      res.status(401).json({
+        success: false,
+        message: "Invalid username or password",
+      });
+
+      return;
+    }
+
+    const token = generateStudentToken(student);
+
+    const studentObject = student.toObject();
+
+    const { password: studentPassword, ...studentData } =
+      studentObject;
+
+    res.status(200).json({
+      success: true,
+      message: "Student Login Successful",
+      token,
+      data: studentData,
+    });
+  } catch (error: unknown) {
+    console.error("STUDENT LOGIN ERROR:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Unable to login student",
+    });
+  }
+};
+
+// =====================================================
+// GET ALL STUDENTS
+// =====================================================
+
+export const getStudents = async (
+  _req: Request,
   res: Response
 ): Promise<void> => {
   try {
     const students = await getAllStudents();
 
-    res.json({
+    res.status(200).json({
       success: true,
       data: students,
     });
   } catch (error) {
-    console.error(error);
+    console.error("GET STUDENTS ERROR:", error);
 
     res.status(500).json({
       success: false,
+      message: "Unable to get students",
     });
   }
 };
 
-// Get Student By ID
+// =====================================================
+// GET STUDENT BY ID
+// =====================================================
+
 export const getStudent = async (
   req: Request,
   res: Response
@@ -76,25 +192,30 @@ export const getStudent = async (
     if (!student) {
       res.status(404).json({
         success: false,
-        message: "Student Not Found",
+        message: "Student not found",
       });
+
       return;
     }
 
-    res.json({
+    res.status(200).json({
       success: true,
       data: student,
     });
   } catch (error) {
-    console.error(error);
+    console.error("GET STUDENT ERROR:", error);
 
     res.status(500).json({
       success: false,
+      message: "Unable to get student",
     });
   }
 };
 
-// Update Student
+// =====================================================
+// UPDATE STUDENT
+// =====================================================
+
 export const editStudent = async (
   req: Request,
   res: Response
@@ -104,31 +225,39 @@ export const editStudent = async (
       ? req.params.id[0]
       : req.params.id;
 
-    const student = await updateStudent(id, req.body);
+    const student = await updateStudent(
+      id,
+      req.body
+    );
 
     if (!student) {
       res.status(404).json({
         success: false,
-        message: "Student Not Found",
+        message: "Student not found",
       });
+
       return;
     }
 
-    res.json({
+    res.status(200).json({
       success: true,
       message: "Student Updated Successfully",
       data: student,
     });
   } catch (error) {
-    console.error(error);
+    console.error("UPDATE STUDENT ERROR:", error);
 
     res.status(500).json({
       success: false,
+      message: "Unable to update student",
     });
   }
 };
 
-// Delete Student
+// =====================================================
+// DELETE STUDENT
+// =====================================================
+
 export const removeStudent = async (
   req: Request,
   res: Response
@@ -138,80 +267,52 @@ export const removeStudent = async (
       ? req.params.id[0]
       : req.params.id;
 
-    await deleteStudent(id);
+    const student = await deleteStudent(id);
 
-    res.json({
+    if (!student) {
+      res.status(404).json({
+        success: false,
+        message: "Student not found",
+      });
+
+      return;
+    }
+
+    res.status(200).json({
       success: true,
       message: "Student Deleted Successfully",
     });
   } catch (error) {
-    console.error(error);
+    console.error("DELETE STUDENT ERROR:", error);
 
     res.status(500).json({
       success: false,
+      message: "Unable to delete student",
     });
   }
 };
 
-export const loginStudent = async (
-  req: Request,
+// =====================================================
+// STUDENT LEADERBOARD
+// =====================================================
+
+export const leaderboard = async (
+  _req: Request,
   res: Response
 ): Promise<void> => {
-  try { 
-    const { email, password } = req.body;
-       console.log("Login Email:", email);
-console.log("Entered Password:", password);
-
-    // Find student by email
-    const student = await getStudentByEmail(email);
-    console.log("Student Found:", student);
-
-    if (!student) {
-      res.status(401).json({
-        success: false,
-        message: "Invalid Email or Password",
-      });
-      return;
-    }
-
-    // Compare password
-    const isPasswordCorrect = await bcrypt.compare(
-      password,
-      student.password
-    );
-    console.log("Password Match:", isPasswordCorrect);
-
-    if (!isPasswordCorrect) {
-      res.status(401).json({
-        success: false,
-        message: "Invalid Email or Password",
-      });
-      return;
-    }
-
-    // Generate JWT
-    const token = generateStudentToken(student);
+  try {
+    const data = await getStudentLeaderboard();
 
     res.status(200).json({
       success: true,
-      message: "Login Successful",
-      data: {
-        token,
-        student: {
-          id: student._id,
-          name: student.name,
-          email: student.email,
-          board: student.board,
-          standard: student.standard,
-        },
-      },
+      data,
     });
   } catch (error) {
-    console.error(error);
+    console.error("LEADERBOARD ERROR:", error);
 
     res.status(500).json({
       success: false,
-      message: "Internal Server Error",
+      message: "Unable to load leaderboard",
     });
   }
 };

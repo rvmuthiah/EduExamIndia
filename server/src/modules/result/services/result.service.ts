@@ -61,3 +61,44 @@ export const deleteResult = async (
 ) => {
   return await Result.findByIdAndDelete(id);
 };
+
+// =====================================================
+// LEADERBOARD
+// =====================================================
+
+export const getLeaderboard = async (
+  examId?: string
+) => {
+  const filter = examId
+    ? {examId}
+    : {};
+
+  const results = await Result.find(filter)
+    .populate("studentId", "name email board standard")
+    .populate("examId", "title name")
+    .sort({
+      percentage: -1,
+      score: -1,
+      correctAnswers: -1,
+    });
+
+  return results.map((result, index) => ({
+    rank: index + 1,
+
+    studentId: result.studentId,
+
+    examId: result.examId,
+
+    score: result.score,
+
+    totalMarks: result.totalMarks,
+
+    percentage: result.percentage,
+
+    correctAnswers: result.correctAnswers,
+
+    wrongAnswers: result.wrongAnswers,
+
+    status: result.status,
+  }));
+};
