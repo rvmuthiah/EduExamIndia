@@ -1,153 +1,315 @@
 import {useState} from "react";
 import {
   AppBar,
-  Box,
-  Button,
-  Container,
-  Drawer,
-  IconButton,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemText,
-  Stack,
   Toolbar,
+  Box,
   Typography,
+  Button,
+  IconButton,
+  Drawer,
+  Stack,
+  Divider,
 } from "@mui/material";
+
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
-import {Link as RouterLink} from "react-router-dom";
+import SchoolIcon from "@mui/icons-material/School";
+
+import {useNavigate} from "react-router-dom";
 
 const PublicHeader = () => {
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const navigate = useNavigate();
 
-  const closeMobileMenu = () => setMobileOpen(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // =====================================================
+  // CLOSE MOBILE MENU
+  // =====================================================
+
+  const handleMenuClose = () => {
+    setMobileMenuOpen(false);
+  };
+
+  // =====================================================
+  // OPEN MOBILE MENU
+  // =====================================================
+
+  const handleMenuOpen = () => {
+    setMobileMenuOpen(true);
+  };
+
+  // =====================================================
+  // NAVIGATION
+  // =====================================================
+
+  const handleNavigation = (path: string) => {
+    handleMenuClose();
+    navigate(path);
+  };
+
+  // =====================================================
+  // MENU ITEMS
+  // =====================================================
+
+  const menuItems = [
+    {
+      label: "Home",
+      path: "/",
+    },
+    {
+      label: "Boards",
+      path: "/boards",
+    },
+    {
+      label: "Standards",
+      path: "/standards",
+    },
+    {
+      label: "Exam Timetable",
+      path: "/exam-timetable",
+    },
+    {
+      label: "Exam Schedule",
+      path: "/exam-schedule",
+    },
+  ];
 
   return (
-    <AppBar
-      position="sticky"
-      elevation={0}
-      sx={{
-        bgcolor: "rgba(255,255,255,0.96)",
-        color: "#0F172A",
-        borderBottom: "1px solid #E2E8F0",
-        backdropFilter: "blur(10px)",
-      }}
-    >
-      <Container maxWidth="lg">
-        <Toolbar disableGutters sx={{minHeight: {xs: 64, md: 72}}}>
-          <Typography
-            component={RouterLink}
-            to="/"
-            variant="h6"
+    <>
+      {/* =================================================
+          HEADER
+      ================================================= */}
+
+      <AppBar
+        position="sticky"
+        elevation={2}
+        sx={{
+          backgroundColor: "#1976d2",
+        }}>
+        <Toolbar
+          sx={{
+            minHeight: {
+              xs: 64,
+              md: 72,
+            },
+            px: {
+              xs: 2,
+              md: 4,
+            },
+            display: "flex",
+            justifyContent: "space-between",
+          }}>
+          {/* =================================================
+              LOGO
+          ================================================= */}
+
+          <Box
+            onClick={() => navigate("/")}
             sx={{
-              textDecoration: "none",
-              color: "#0F172A",
-              fontWeight: 800,
-              letterSpacing: "-0.03em",
-              mr: 4,
-            }}
-          >
-            EduExam<span style={{color: "#1976D2"}}>India</span>
-          </Typography>
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+              cursor: "pointer",
+            }}>
+            <SchoolIcon
+              sx={{
+                fontSize: {
+                  xs: 30,
+                  md: 34,
+                },
+              }}
+            />
 
-          <Stack
-            direction="row"
-            spacing={1}
-            sx={{display: {xs: "none", md: "flex"}, alignItems: "center"}}
-          >
-            <Button href="#home" sx={{color: "#475569", fontWeight: 600}}>Home</Button>
-            <Button href="#why-us" sx={{color: "#475569", fontWeight: 600}}>Why RankOne</Button>
-            <Button href="#how-it-works" sx={{color: "#475569", fontWeight: 600}}>How It Works</Button>
-          </Stack>
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: 800,
+                fontSize: {
+                  xs: "1.1rem",
+                  sm: "1.25rem",
+                  md: "1.4rem",
+                },
+              }}>
+              EduExamIndia
+            </Typography>
+          </Box>
 
-          <Box sx={{flexGrow: 1}} />
+          {/* =================================================
+              DESKTOP MENU
+          ================================================= */}
 
-          <Stack
-            direction="row"
-            spacing={1}
-            sx={{display: {xs: "none", md: "flex"}, alignItems: "center"}}
-          >
-            <Button component={RouterLink} to="/student/login" sx={{fontWeight: 700}}>
+          <Box
+            sx={{
+              display: {
+                xs: "none",
+                md: "flex",
+              },
+              alignItems: "center",
+              gap: 1,
+            }}>
+            {menuItems.map(item => (
+              <Button
+                key={item.path}
+                onClick={() => handleNavigation(item.path)}
+                sx={{
+                  color: "white",
+                  fontWeight: 600,
+                  textTransform: "none",
+                  px: 1.5,
+                  "&:hover": {
+                    backgroundColor: "rgba(255,255,255,0.12)",
+                  },
+                }}>
+                {item.label}
+              </Button>
+            ))}
+
+            {/* STUDENT LOGIN */}
+
+            <Button
+              variant="outlined"
+              onClick={() => handleNavigation("/student/login")}
+              sx={{
+                ml: 1,
+                color: "white",
+                borderColor: "white",
+                fontWeight: 700,
+                textTransform: "none",
+                "&:hover": {
+                  borderColor: "white",
+                  backgroundColor: "rgba(255,255,255,0.12)",
+                },
+              }}>
               Student Login
             </Button>
-            <Button
-              component={RouterLink}
-              to="/admin/login"
-              variant="contained"
-              sx={{
-                borderRadius: 2,
-                px: 2.2,
-                fontWeight: 700,
-                boxShadow: "none",
-                "&:hover": {boxShadow: "none"},
-              }}
-            >
-              Admin Login
-            </Button>
-          </Stack>
+          </Box>
+
+          {/* =================================================
+              MOBILE MENU BUTTON
+          ================================================= */}
 
           <IconButton
-            aria-label="Open navigation menu"
-            onClick={() => setMobileOpen(true)}
-            sx={{display: {xs: "inline-flex", md: "none"}, ml: 1}}
-          >
+            onClick={handleMenuOpen}
+            aria-label="Open menu"
+            sx={{
+              display: {
+                xs: "flex",
+                md: "none",
+              },
+              color: "white",
+            }}>
             <MenuIcon />
           </IconButton>
         </Toolbar>
-      </Container>
+      </AppBar>
+
+      {/* =====================================================
+          MOBILE DRAWER
+      ===================================================== */}
 
       <Drawer
         anchor="right"
-        open={mobileOpen}
-        onClose={closeMobileMenu}
-        PaperProps={{sx: {width: "min(86vw, 340px)"}}}
-      >
-        <Box sx={{p: 2}}>
-          <Stack direction="row" alignItems="center" justifyContent="space-between">
-            <Typography fontWeight={800}>EduExamIndia</Typography>
-            <IconButton aria-label="Close navigation menu" onClick={closeMobileMenu}>
+        open={mobileMenuOpen}
+        onClose={handleMenuClose}>
+        <Box
+          sx={{
+            width: "min(86vw, 340px)",
+            height: "100%",
+            display: "flex",
+            flexDirection: "column",
+          }}>
+          {/* =================================================
+              DRAWER HEADER
+          ================================================= */}
+
+          <Stack
+            direction="row"
+            sx={{
+              alignItems: "center",
+              justifyContent: "space-between",
+              p: 2,
+            }}>
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: 800,
+              }}>
+              EduExamIndia
+            </Typography>
+
+            <IconButton
+              onClick={handleMenuClose}
+              aria-label="Close menu">
               <CloseIcon />
             </IconButton>
           </Stack>
-        </Box>
-        <List>
-          {[
-            ["Home", "#home"],
-            ["Why RankOne", "#why-us"],
-            ["How It Works", "#how-it-works"],
-          ].map(([label, href]) => (
-            <ListItem key={href} disablePadding>
-              <ListItemButton component="a" href={href} onClick={closeMobileMenu}>
-                <ListItemText primary={label} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-          <ListItem sx={{px: 2, pt: 2}}>
+
+          <Divider />
+
+          {/* =================================================
+              MOBILE NAVIGATION
+          ================================================= */}
+
+          <Box
+            sx={{
+              p: 2,
+              display: "flex",
+              flexDirection: "column",
+              gap: 1,
+            }}>
+            {menuItems.map(item => (
+              <Button
+                key={item.path}
+                fullWidth
+                onClick={() => handleNavigation(item.path)}
+                sx={{
+                  justifyContent: "flex-start",
+                  color: "text.primary",
+                  fontWeight: 600,
+                  textTransform: "none",
+                  py: 1.2,
+                }}>
+                {item.label}
+              </Button>
+            ))}
+
+            <Divider sx={{my: 1}} />
+
+            {/* =================================================
+                STUDENT LOGIN
+            ================================================= */}
+
             <Button
               fullWidth
-              component={RouterLink}
-              to="/student/login"
-              onClick={closeMobileMenu}
-              variant="outlined"
-            >
+              variant="contained"
+              onClick={() => handleNavigation("/student/login")}
+              sx={{
+                fontWeight: 700,
+                textTransform: "none",
+                py: 1.2,
+              }}>
               Student Login
             </Button>
-          </ListItem>
-          <ListItem sx={{px: 2}}>
+
+            {/* =================================================
+                STUDENT REGISTER
+            ================================================= */}
+
             <Button
               fullWidth
-              component={RouterLink}
-              to="/admin/login"
-              onClick={closeMobileMenu}
-              variant="contained"
-            >
-              Admin Login
+              variant="outlined"
+              onClick={() => handleNavigation("/student/register")}
+              sx={{
+                fontWeight: 700,
+                textTransform: "none",
+                py: 1.2,
+              }}>
+              Student Registration
             </Button>
-          </ListItem>
-        </List>
+          </Box>
+        </Box>
       </Drawer>
-    </AppBar>
+    </>
   );
 };
 
