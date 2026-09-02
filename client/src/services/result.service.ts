@@ -1,7 +1,4 @@
-import axios from "axios";
-
-const API_URL =
-  "http://localhost:5000/api/results";
+import api from "./api";
 
 const getToken = () => ({
   headers: {
@@ -14,11 +11,11 @@ const getToken = () => ({
 // =====================================================
 
 export const getResultByAttempt = async (
-  attemptId: string
+  attemptId: string,
 ) => {
-  const response = await axios.get(
-    `${API_URL}/attempt/${attemptId}`,
-    getToken()
+  const response = await api.get(
+    `/results/attempt/${attemptId}`,
+    getToken(),
   );
 
   return response.data;
@@ -29,11 +26,11 @@ export const getResultByAttempt = async (
 // =====================================================
 
 export const getStudentResults = async (
-  studentId: string
+  studentId: string,
 ) => {
-  const response = await axios.get(
-    `${API_URL}/student/${studentId}`,
-    getToken()
+  const response = await api.get(
+    `/results/student/${studentId}`,
+    getToken(),
   );
 
   return response.data;
@@ -44,15 +41,15 @@ export const getStudentResults = async (
 // =====================================================
 
 export const getLeaderboard = async (
-  examId?: string
+  examId?: string,
 ) => {
   const url = examId
-    ? `${API_URL}/leaderboard?examId=${examId}`
-    : `${API_URL}/leaderboard`;
+    ? `/results/leaderboard?examId=${examId}`
+    : "/results/leaderboard";
 
-  const response = await axios.get(
+  const response = await api.get(
     url,
-    getToken()
+    getToken(),
   );
 
   return response.data;

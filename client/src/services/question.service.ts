@@ -1,6 +1,4 @@
-import axios from "axios";
-
-const API_URL = "http://localhost:5000/api/questions";
+import api from "./api";
 
 export interface Question {
   _id: string;
@@ -64,19 +62,17 @@ const getAuthHeaders = () => {
   };
 };
 
-
 // =====================================================
 // GET ALL QUESTIONS
 // =====================================================
 
 export const getQuestions = async () => {
-  const response = await axios.get(API_URL, {
+  const response = await api.get("/questions", {
     headers: getAuthHeaders(),
   });
 
   return response.data;
 };
-
 
 // =====================================================
 // GET QUESTIONS BY EXAM
@@ -85,8 +81,8 @@ export const getQuestions = async () => {
 export const getQuestionsForExam = async (
   examId: string,
 ) => {
-  const response = await axios.get(
-    `${API_URL}/exam/${examId}`,
+  const response = await api.get(
+    `/questions/exam/${examId}`,
     {
       headers: getAuthHeaders(),
     },
@@ -100,7 +96,6 @@ export const getQuestionsForExam = async (
   return response.data;
 };
 
-
 // =====================================================
 // GET SINGLE QUESTION
 // =====================================================
@@ -108,8 +103,8 @@ export const getQuestionsForExam = async (
 export const getQuestion = async (
   id: string,
 ) => {
-  const response = await axios.get(
-    `${API_URL}/${id}`,
+  const response = await api.get(
+    `/questions/${id}`,
     {
       headers: getAuthHeaders(),
     },
@@ -123,7 +118,6 @@ export const getQuestion = async (
   return response.data;
 };
 
-
 // =====================================================
 // CREATE QUESTION
 // =====================================================
@@ -131,8 +125,8 @@ export const getQuestion = async (
 export const createQuestion = async (
   data: Partial<Question>,
 ) => {
-  const response = await axios.post(
-    API_URL,
+  const response = await api.post(
+    "/questions",
     data,
     {
       headers: getAuthHeaders(),
@@ -141,7 +135,6 @@ export const createQuestion = async (
 
   return response.data;
 };
-
 
 // =====================================================
 // UPDATE QUESTION
@@ -151,8 +144,8 @@ export const updateQuestion = async (
   id: string,
   data: Partial<Question>,
 ) => {
-  const response = await axios.put(
-    `${API_URL}/${id}`,
+  const response = await api.put(
+    `/questions/${id}`,
     data,
     {
       headers: getAuthHeaders(),
@@ -162,7 +155,6 @@ export const updateQuestion = async (
   return response.data;
 };
 
-
 // =====================================================
 // DELETE QUESTION
 // =====================================================
@@ -170,8 +162,8 @@ export const updateQuestion = async (
 export const deleteQuestion = async (
   id: string,
 ) => {
-  const response = await axios.delete(
-    `${API_URL}/${id}`,
+  const response = await api.delete(
+    `/questions/${id}`,
     {
       headers: getAuthHeaders(),
     },

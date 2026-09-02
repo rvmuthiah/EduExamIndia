@@ -1,7 +1,4 @@
-import axios from "axios";
-
-const API_URL =
-  "http://localhost:5000/api/exam-attempts";
+import api from "./api";
 
 const getToken = () => ({
   headers: {
@@ -17,8 +14,8 @@ export const startExamAttempt = async (
   studentId: string,
   examId: string,
 ) => {
-  const response = await axios.post(
-    `${API_URL}/start`,
+  const response = await api.post(
+    "/exam-attempts/start",
     {
       studentId,
       examId,
@@ -36,8 +33,8 @@ export const startExamAttempt = async (
 export const getExamAttempt = async (
   attemptId: string,
 ) => {
-  const response = await axios.get(
-    `${API_URL}/${attemptId}`,
+  const response = await api.get(
+    `/exam-attempts/${attemptId}`,
     getToken(),
   );
 
@@ -51,8 +48,8 @@ export const getExamAttempt = async (
 export const getStudentAttempts = async (
   studentId: string,
 ) => {
-  const response = await axios.get(
-    `${API_URL}/student/${studentId}`,
+  const response = await api.get(
+    `/exam-attempts/student/${studentId}`,
     getToken(),
   );
 
@@ -66,8 +63,8 @@ export const getStudentAttempts = async (
 export const submitExam = async (
   attemptId: string,
 ) => {
-  const response = await axios.put(
-    `${API_URL}/${attemptId}/submit`,
+  const response = await api.put(
+    `/exam-attempts/${attemptId}/submit`,
     {},
     getToken(),
   );

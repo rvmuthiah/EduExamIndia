@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import {useNavigate} from "react-router-dom";
 import axios from "axios";
+import api from "../services/api";
 
 interface Student {
   name: string;
@@ -59,8 +60,8 @@ const StudentProfile = () => {
       }
 
       try {
-        const response = await axios.get(
-          `http://localhost:5000/api/students/${studentId}`,
+        const response = await api.get(
+          `/students/${studentId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -111,8 +112,8 @@ const StudentProfile = () => {
     try {
       setSaving(true);
 
-      const response = await axios.put(
-        `http://localhost:5000/api/students/${studentId}`,
+      const response = await api.put(
+        `/students/${studentId}`,
         {
           name: student.name,
           email: student.email,

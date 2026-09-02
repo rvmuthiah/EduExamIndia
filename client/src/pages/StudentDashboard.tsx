@@ -18,7 +18,8 @@ import QuizIcon from "@mui/icons-material/Quiz";
 import StarIcon from "@mui/icons-material/Star";
 import PersonIcon from "@mui/icons-material/Person";
 
-import axios from "axios";
+// import axios from "axios";
+import api from "../services/api";
 
 import {getStudentResults} from "../services/result.service";
 
@@ -149,8 +150,8 @@ const StudentDashboard = () => {
 
         const token = localStorage.getItem("token");
 
-        const leaderboardResponse = await axios.get(
-          "http://localhost:5000/api/students/leaderboard",
+        const leaderboardResponse = await api.get(
+          "/students/leaderboard",
           {
             headers: {
               Authorization: `Bearer ${token}`,

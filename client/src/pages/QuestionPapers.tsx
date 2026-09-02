@@ -23,6 +23,7 @@ import {
 } from "../services/questionPaper.service";
 
 import DeleteDialog from "../components/DeleteDialog";
+import api from "../services/api";
 
 interface QuestionPaper {
   _id: string;
@@ -230,10 +231,10 @@ const QuestionPapers = () => {
 
                           file = file.replace("uploads/", "");
 
-                          window.open(
-                            `http://localhost:5000/uploads/${file}`,
-                            "_blank",
-                          );
+                         const baseURL =
+                           api.defaults.baseURL?.replace("/api", "") || "";
+
+                         window.open(`${baseURL}/uploads/${file}`, "_blank");
                         }}>
                         View
                       </Button>

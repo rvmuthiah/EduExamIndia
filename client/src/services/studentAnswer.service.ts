@@ -1,6 +1,4 @@
-import axios from "axios";
-
-const API_URL = "http://localhost:5000/api/student-answers";
+import api from "./api";
 
 interface SaveAnswerData {
   attemptId: string;
@@ -20,11 +18,15 @@ const getAuthHeaders = () => ({
   Authorization: `Bearer ${getAuthToken()}`,
 });
 
+// =====================================================
+// SAVE STUDENT ANSWER
+// =====================================================
+
 export const saveStudentAnswer = async (
   data: SaveAnswerData,
 ) => {
-  const response = await axios.post(
-    API_URL,
+  const response = await api.post(
+    "/student-answers",
     data,
     {
       headers: getAuthHeaders(),
@@ -34,11 +36,15 @@ export const saveStudentAnswer = async (
   return response.data;
 };
 
+// =====================================================
+// GET ANSWERS BY ATTEMPT
+// =====================================================
+
 export const getAnswersByAttempt = async (
   attemptId: string,
 ) => {
-  const response = await axios.get(
-    `${API_URL}/attempt/${attemptId}`,
+  const response = await api.get(
+    `/student-answers/attempt/${attemptId}`,
     {
       headers: getAuthHeaders(),
     },

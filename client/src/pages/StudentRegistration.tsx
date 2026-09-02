@@ -11,6 +11,7 @@ import {
 import SchoolIcon from "@mui/icons-material/School";
 import {useNavigate} from "react-router-dom";
 import axios from "axios";
+import api from "../services/api";
 
 const StudentRegistration = () => {
   const navigate = useNavigate();
@@ -57,8 +58,7 @@ const StudentRegistration = () => {
     try {
       setLoading(true);
 
-      const response = await axios.post(
-  "http://localhost:5000/api/students/register", {
+      const response = await api.post("/students/register", {
         ...student,
         standard: Number(student.standard),
         subscriptionType: "Free",
