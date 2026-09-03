@@ -19,6 +19,9 @@ import GroupsIcon from "@mui/icons-material/Groups";
 
 import {useNavigate} from "react-router-dom";
 
+import PublicHeader from "../../components/public/PublicHeader";
+import PublicFooter from "../../components/public/PublicFooter";
+
 const Home = () => {
   const navigate = useNavigate();
 
@@ -59,153 +62,15 @@ const Home = () => {
         backgroundColor: "#f8fafc",
         color: "#0f172a",
       }}>
-      {/* ================= HEADER ================= */}
+      {/* =====================================================
+          PUBLIC HEADER
+      ===================================================== */}
 
-      <Box
-        component="header"
-        sx={{
-          backgroundColor: "#ffffff",
-          borderBottom: "1px solid #e2e8f0",
-          position: "sticky",
-          top: 0,
-          zIndex: 1000,
-        }}>
-        <Container maxWidth="lg">
-          <Box
-            sx={{
-              minHeight: 72,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              gap: 2,
-            }}>
-            {/* Logo */}
+      <PublicHeader />
 
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: 1.2,
-                cursor: "pointer",
-              }}
-              onClick={() => navigate("/")}>
-              <Box
-                sx={{
-                  width: 44,
-                  height: 44,
-                  borderRadius: 2,
-                  backgroundColor: "#1976d2",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "#ffffff",
-                }}>
-                <SchoolIcon />
-              </Box>
-
-              <Box>
-                <Typography
-                  variant="h6"
-                  sx={{
-                    fontWeight: 800,
-                    lineHeight: 1.1,
-                    color: "#0f172a",
-                  }}>
-                  RankOne
-                </Typography>
-
-                <Typography
-                  variant="caption"
-                  sx={{
-                    color: "#64748b",
-                  }}>
-                  EduExamIndia
-                </Typography>
-              </Box>
-            </Box>
-
-            {/* Navigation */}
-
-            <Box
-              sx={{
-                display: {xs: "none", md: "flex"},
-                alignItems: "center",
-                gap: 1,
-              }}>
-              <Button
-                onClick={() => navigate("/")}
-                sx={{
-                  color: "#334155",
-                  textTransform: "none",
-                  fontWeight: 600,
-                }}>
-                Home
-              </Button>
-
-              <Button
-                onClick={() => navigate("/about")}
-                sx={{
-                  color: "#334155",
-                  textTransform: "none",
-                  fontWeight: 600,
-                }}>
-                About Us
-              </Button>
-
-              <Button
-                onClick={() => navigate("/how-it-works")}
-                sx={{
-                  color: "#334155",
-                  textTransform: "none",
-                  fontWeight: 600,
-                }}>
-                How It Works
-              </Button>
-
-              <Button
-                onClick={() => navigate("/exam-timetable")}
-                sx={{
-                  color: "#334155",
-                  textTransform: "none",
-                  fontWeight: 600,
-                }}>
-                Exam Timetable
-              </Button>
-
-              <Button
-                variant="contained"
-                onClick={() => navigate("/student/login")}
-                sx={{
-                  ml: 1,
-                  textTransform: "none",
-                  borderRadius: 2,
-                  px: 2.5,
-                  fontWeight: 700,
-                  backgroundColor: "#1976d2",
-                }}>
-                Student Login
-              </Button>
-            </Box>
-
-            {/* Mobile Login */}
-
-            <Button
-              variant="contained"
-              onClick={() => navigate("/student/login")}
-              sx={{
-                display: {xs: "inline-flex", md: "none"},
-                textTransform: "none",
-                borderRadius: 2,
-                fontWeight: 700,
-                backgroundColor: "#1976d2",
-              }}>
-              Login
-            </Button>
-          </Box>
-        </Container>
-      </Box>
-
-      {/* ================= HERO ================= */}
+      {/* =====================================================
+          HERO SECTION
+      ===================================================== */}
 
       <Box
         component="section"
@@ -231,7 +96,9 @@ const Home = () => {
                 md: 8,
               },
             }}>
-            {/* Hero Content */}
+            {/* =================================================
+                HERO CONTENT
+            ================================================= */}
 
             <Box
               sx={{
@@ -297,17 +164,21 @@ const Home = () => {
                 evaluate their knowledge through online examinations.
               </Typography>
 
+              {/* HERO BUTTONS */}
+
               <Box
                 sx={{
                   display: "flex",
                   flexWrap: "wrap",
                   gap: 2,
                 }}>
+                {/* SIGN UP */}
+
                 <Button
                   variant="contained"
                   size="large"
                   endIcon={<ArrowForwardIcon />}
-                  onClick={() => navigate("/student/login")}
+                  onClick={() => navigate("/student/register")}
                   sx={{
                     px: 3,
                     py: 1.4,
@@ -317,15 +188,34 @@ const Home = () => {
                     fontSize: "1rem",
                     backgroundColor: "#1976d2",
                   }}>
-                  Start Your Exam
+                  Create Student Account
                 </Button>
+
+                {/* LOGIN */}
 
                 <Button
                   variant="outlined"
                   size="large"
-                  onClick={() => navigate("/how-it-works")}
+                  onClick={() => navigate("/student/login")}
                   sx={{
                     px: 3,
+                    py: 1.4,
+                    borderRadius: 2,
+                    textTransform: "none",
+                    fontWeight: 700,
+                    fontSize: "1rem",
+                  }}>
+                  Student Login
+                </Button>
+
+                {/* HOW IT WORKS */}
+
+                <Button
+                  variant="text"
+                  size="large"
+                  onClick={() => navigate("/how-it-works")}
+                  sx={{
+                    px: 2,
                     py: 1.4,
                     borderRadius: 2,
                     textTransform: "none",
@@ -337,7 +227,9 @@ const Home = () => {
               </Box>
             </Box>
 
-            {/* Hero Illustration */}
+            {/* =================================================
+                HERO ILLUSTRATION
+            ================================================= */}
 
             <Box
               sx={{
@@ -438,7 +330,9 @@ const Home = () => {
         </Container>
       </Box>
 
-      {/* ================= FEATURES ================= */}
+      {/* =====================================================
+          FEATURES
+      ===================================================== */}
 
       <Box
         component="section"
@@ -557,7 +451,9 @@ const Home = () => {
         </Container>
       </Box>
 
-      {/* ================= BENEFITS ================= */}
+      {/* =====================================================
+          BENEFITS
+      ===================================================== */}
 
       <Box
         component="section"
@@ -582,6 +478,8 @@ const Home = () => {
               },
               alignItems: "center",
             }}>
+            {/* LEFT */}
+
             <Box
               sx={{
                 flex: 1,
@@ -654,6 +552,8 @@ const Home = () => {
                 ))}
               </Box>
             </Box>
+
+            {/* RIGHT */}
 
             <Box
               sx={{
@@ -735,15 +635,15 @@ const Home = () => {
 
                 <Button
                   variant="contained"
+                  onClick={() => navigate("/student/register")}
                   endIcon={<ArrowForwardIcon />}
-                  onClick={() => navigate("/student/login")}
                   sx={{
                     textTransform: "none",
                     borderRadius: 2,
                     fontWeight: 700,
                     backgroundColor: "#1976d2",
                   }}>
-                  Student Login
+                  Create Student Account
                 </Button>
               </Paper>
             </Box>
@@ -751,7 +651,9 @@ const Home = () => {
         </Container>
       </Box>
 
-      {/* ================= CTA ================= */}
+      {/* =====================================================
+          STUDENT SIGN-UP CTA
+      ===================================================== */}
 
       <Box
         component="section"
@@ -778,7 +680,7 @@ const Home = () => {
                 fontWeight: 800,
                 mb: 2,
               }}>
-              Ready to Start Your Examination?
+              New Student? Create Your Account
             </Typography>
 
             <Typography
@@ -789,129 +691,67 @@ const Home = () => {
                 lineHeight: 1.8,
                 mb: 4,
               }}>
-              Login to your student account and start exploring your available
-              examinations.
+              Join EduExamIndia and start your online examination journey.
+              Create your student account today and get ready for regular
+              practice and assessments.
             </Typography>
-
-            <Button
-              variant="contained"
-              size="large"
-              onClick={() => navigate("/student/login")}
-              endIcon={<ArrowForwardIcon />}
-              sx={{
-                backgroundColor: "#ffffff",
-                color: "#1976d2",
-                px: 4,
-                py: 1.4,
-                borderRadius: 2,
-                textTransform: "none",
-                fontWeight: 800,
-                "&:hover": {
-                  backgroundColor: "#f8fafc",
-                },
-              }}>
-              Student Login
-            </Button>
-          </Box>
-        </Container>
-      </Box>
-
-      {/* ================= FOOTER ================= */}
-
-      <Box
-        component="footer"
-        sx={{
-          backgroundColor: "#0f172a",
-          color: "#ffffff",
-          py: 5,
-        }}>
-        <Container maxWidth="lg">
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: {
-                xs: "column",
-                md: "row",
-              },
-              justifyContent: "space-between",
-              alignItems: {
-                xs: "flex-start",
-                md: "center",
-              },
-              gap: 3,
-            }}>
-            <Box>
-              <Typography
-                sx={{
-                  fontWeight: 800,
-                  fontSize: 20,
-                  mb: 0.5,
-                }}>
-                RankOne
-              </Typography>
-
-              <Typography
-                variant="body2"
-                sx={{
-                  color: "#94a3b8",
-                }}>
-                EduExamIndia
-              </Typography>
-            </Box>
 
             <Box
               sx={{
                 display: "flex",
+                justifyContent: "center",
                 flexWrap: "wrap",
-                gap: 1,
+                gap: 2,
               }}>
               <Button
-                onClick={() => navigate("/")}
+                variant="contained"
+                size="large"
+                onClick={() => navigate("/student/register")}
+                endIcon={<ArrowForwardIcon />}
                 sx={{
-                  color: "#cbd5e1",
+                  backgroundColor: "#ffffff",
+                  color: "#1976d2",
+                  px: 4,
+                  py: 1.4,
+                  borderRadius: 2,
                   textTransform: "none",
+                  fontWeight: 800,
+                  "&:hover": {
+                    backgroundColor: "#f8fafc",
+                  },
                 }}>
-                Home
+                Sign Up Now
               </Button>
 
               <Button
-                onClick={() => navigate("/about")}
+                variant="outlined"
+                size="large"
+                onClick={() => navigate("/student/login")}
                 sx={{
-                  color: "#cbd5e1",
+                  color: "#ffffff",
+                  borderColor: "#ffffff",
+                  px: 4,
+                  py: 1.4,
+                  borderRadius: 2,
                   textTransform: "none",
+                  fontWeight: 700,
+                  "&:hover": {
+                    borderColor: "#ffffff",
+                    backgroundColor: "rgba(255,255,255,0.1)",
+                  },
                 }}>
-                About Us
-              </Button>
-
-              <Button
-                onClick={() => navigate("/contact")}
-                sx={{
-                  color: "#cbd5e1",
-                  textTransform: "none",
-                }}>
-                Contact
+                Student Login
               </Button>
             </Box>
           </Box>
-
-          <Divider
-            sx={{
-              my: 3,
-              borderColor: "#334155",
-            }}
-          />
-
-          <Typography
-            variant="body2"
-            sx={{
-              color: "#64748b",
-              textAlign: "center",
-            }}>
-            © {new Date().getFullYear()} RankOne - EduExamIndia. All rights
-            reserved.
-          </Typography>
         </Container>
       </Box>
+
+      {/* =====================================================
+          PUBLIC FOOTER
+      ===================================================== */}
+
+      <PublicFooter />
     </Box>
   );
 };

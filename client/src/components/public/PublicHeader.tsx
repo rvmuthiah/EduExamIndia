@@ -14,6 +14,7 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 import SchoolIcon from "@mui/icons-material/School";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
 
 import {useNavigate} from "react-router-dom";
 
@@ -48,13 +49,21 @@ const PublicHeader = () => {
   };
 
   // =====================================================
-  // MENU ITEMS
+  // PUBLIC MENU ITEMS
   // =====================================================
 
   const menuItems = [
     {
       label: "Home",
       path: "/",
+    },
+    {
+      label: "About Us",
+      path: "/about",
+    },
+    {
+      label: "How It Works",
+      path: "/how-it-works",
     },
     {
       label: "Boards",
@@ -76,28 +85,33 @@ const PublicHeader = () => {
 
   return (
     <>
-      {/* =================================================
-          HEADER
-      ================================================= */}
+      {/* =====================================================
+          PUBLIC HEADER
+      ===================================================== */}
 
       <AppBar
         position="sticky"
-        elevation={2}
+        elevation={1}
         sx={{
-          backgroundColor: "#1976d2",
+          backgroundColor: "#ffffff",
+          color: "#0f172a",
+          borderBottom: "1px solid #e2e8f0",
         }}>
         <Toolbar
           sx={{
             minHeight: {
               xs: 64,
-              md: 72,
+              md: 70,
             },
+
             px: {
               xs: 2,
-              md: 4,
+              sm: 2.5,
+              md: 3,
+              lg: 4,
             },
-            display: "flex",
-            justifyContent: "space-between",
+
+            gap: 1,
           }}>
           {/* =================================================
               LOGO
@@ -110,101 +124,270 @@ const PublicHeader = () => {
               alignItems: "center",
               gap: 1,
               cursor: "pointer",
+              flexShrink: 0,
+              mr: {
+                xs: 0,
+                md: 1,
+              },
             }}>
-            <SchoolIcon
+            <Box
               sx={{
-                fontSize: {
-                  xs: 30,
-                  md: 34,
+                width: {
+                  xs: 40,
+                  md: 44,
                 },
-              }}
-            />
+                height: {
+                  xs: 40,
+                  md: 44,
+                },
+                borderRadius: 2,
+                backgroundColor: "#1976d2",
+                color: "#ffffff",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+              }}>
+              <SchoolIcon
+                sx={{
+                  fontSize: {
+                    xs: 24,
+                    md: 27,
+                  },
+                }}
+              />
+            </Box>
 
-            <Typography
-              variant="h6"
+            <Box
               sx={{
-                fontWeight: 800,
-                fontSize: {
-                  xs: "1.1rem",
-                  sm: "1.25rem",
-                  md: "1.4rem",
+                display: {
+                  xs: "block",
+                  sm: "block",
                 },
               }}>
-              EduExamIndia
-            </Typography>
+              <Typography
+                sx={{
+                  fontWeight: 800,
+                  lineHeight: 1,
+                  color: "#0f172a",
+                  fontSize: {
+                    xs: "1rem",
+                    sm: "1.15rem",
+                    md: "1.25rem",
+                  },
+                  whiteSpace: "nowrap",
+                }}>
+                RankOne
+              </Typography>
+
+              <Typography
+                sx={{
+                  color: "#64748b",
+                  fontSize: {
+                    xs: "0.65rem",
+                    sm: "0.7rem",
+                    md: "0.72rem",
+                  },
+                  whiteSpace: "nowrap",
+                }}>
+                EduExamIndia
+              </Typography>
+            </Box>
           </Box>
 
           {/* =================================================
-              DESKTOP MENU
+              DESKTOP NAVIGATION
           ================================================= */}
 
           <Box
             sx={{
               display: {
                 xs: "none",
-                md: "flex",
+                lg: "flex",
               },
+
               alignItems: "center",
-              gap: 1,
+
+              justifyContent: "flex-end",
+
+              flex: 1,
+
+              gap: 0.2,
+
+              minWidth: 0,
             }}>
             {menuItems.map(item => (
               <Button
                 key={item.path}
                 onClick={() => handleNavigation(item.path)}
                 sx={{
-                  color: "white",
+                  color: "#334155",
                   fontWeight: 600,
                   textTransform: "none",
-                  px: 1.5,
+
+                  fontSize: {
+                    lg: "0.86rem",
+                    xl: "0.92rem",
+                  },
+
+                  px: {
+                    lg: 0.75,
+                    xl: 1,
+                  },
+
+                  whiteSpace: "nowrap",
+
+                  minWidth: "auto",
+
                   "&:hover": {
-                    backgroundColor: "rgba(255,255,255,0.12)",
+                    backgroundColor: "#f1f5f9",
+                    color: "#1976d2",
                   },
                 }}>
                 {item.label}
               </Button>
             ))}
 
-            {/* STUDENT LOGIN */}
+            {/* =================================================
+                STUDENT LOGIN
+            ================================================= */}
 
             <Button
-              variant="outlined"
+              variant="contained"
               onClick={() => handleNavigation("/student/login")}
               sx={{
-                ml: 1,
-                color: "white",
-                borderColor: "white",
+                ml: 0.7,
+
+                px: {
+                  lg: 1.5,
+                  xl: 2,
+                },
+
+                py: 0.9,
+
+                borderRadius: 2,
+
+                backgroundColor: "#1976d2",
+
+                color: "#ffffff",
+
                 fontWeight: 700,
+
                 textTransform: "none",
+
+                fontSize: {
+                  lg: "0.82rem",
+                  xl: "0.9rem",
+                },
+
+                whiteSpace: "nowrap",
+
+                minWidth: "auto",
+
                 "&:hover": {
-                  borderColor: "white",
-                  backgroundColor: "rgba(255,255,255,0.12)",
+                  backgroundColor: "#1565c0",
                 },
               }}>
               Student Login
             </Button>
+
+            {/* =================================================
+                STUDENT SIGN UP
+            ================================================= */}
+
+            <Button
+              variant="outlined"
+              startIcon={<PersonAddIcon />}
+              onClick={() => handleNavigation("/student/register")}
+              sx={{
+                ml: 0.6,
+
+                px: {
+                  lg: 1.3,
+                  xl: 1.8,
+                },
+
+                py: 0.9,
+
+                borderRadius: 2,
+
+                borderWidth: 1.5,
+
+                borderColor: "#1976d2",
+
+                color: "#1976d2",
+
+                fontWeight: 800,
+
+                textTransform: "none",
+
+                fontSize: {
+                  lg: "0.82rem",
+                  xl: "0.9rem",
+                },
+
+                whiteSpace: "nowrap",
+
+                minWidth: "auto",
+
+                "&:hover": {
+                  borderWidth: 1.5,
+                  borderColor: "#1565c0",
+                  backgroundColor: "#eff6ff",
+                },
+              }}>
+              Sign Up
+            </Button>
           </Box>
 
           {/* =================================================
-              MOBILE MENU BUTTON
+              TABLET / MOBILE MENU BUTTON
           ================================================= */}
 
-          <IconButton
+          <Button
+            variant="outlined"
             onClick={handleMenuOpen}
+            startIcon={<MenuIcon />}
             aria-label="Open menu"
             sx={{
               display: {
                 xs: "flex",
-                md: "none",
+                lg: "none",
               },
-              color: "white",
+
+              marginLeft: "auto",
+
+              color: "#1976d2",
+
+              borderColor: "#1976d2",
+
+              fontWeight: 700,
+
+              textTransform: "none",
+
+              minWidth: "auto",
+
+              px: {
+                xs: 1.2,
+                sm: 1.5,
+              },
+
+              py: 0.7,
+
+              whiteSpace: "nowrap",
+
+              "&:hover": {
+                borderColor: "#1565c0",
+                backgroundColor: "#eff6ff",
+              },
             }}>
-            <MenuIcon />
-          </IconButton>
+            Menu
+          </Button>
         </Toolbar>
       </AppBar>
 
       {/* =====================================================
-          MOBILE DRAWER
+          MOBILE / TABLET DRAWER
       ===================================================== */}
 
       <Drawer
@@ -213,10 +396,11 @@ const PublicHeader = () => {
         onClose={handleMenuClose}>
         <Box
           sx={{
-            width: "min(86vw, 340px)",
+            width: "min(86vw, 360px)",
             height: "100%",
             display: "flex",
             flexDirection: "column",
+            backgroundColor: "#ffffff",
           }}>
           {/* =================================================
               DRAWER HEADER
@@ -229,13 +413,44 @@ const PublicHeader = () => {
               justifyContent: "space-between",
               p: 2,
             }}>
-            <Typography
-              variant="h6"
+            <Box
               sx={{
-                fontWeight: 800,
+                display: "flex",
+                alignItems: "center",
+                gap: 1,
               }}>
-              EduExamIndia
-            </Typography>
+              <Box
+                sx={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 2,
+                  backgroundColor: "#1976d2",
+                  color: "#ffffff",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}>
+                <SchoolIcon />
+              </Box>
+
+              <Box>
+                <Typography
+                  sx={{
+                    fontWeight: 800,
+                    lineHeight: 1,
+                  }}>
+                  RankOne
+                </Typography>
+
+                <Typography
+                  sx={{
+                    color: "#64748b",
+                    fontSize: "0.7rem",
+                  }}>
+                  EduExamIndia
+                </Typography>
+              </Box>
+            </Box>
 
             <IconButton
               onClick={handleMenuClose}
@@ -255,7 +470,8 @@ const PublicHeader = () => {
               p: 2,
               display: "flex",
               flexDirection: "column",
-              gap: 1,
+              gap: 0.5,
+              overflowY: "auto",
             }}>
             {menuItems.map(item => (
               <Button
@@ -264,16 +480,22 @@ const PublicHeader = () => {
                 onClick={() => handleNavigation(item.path)}
                 sx={{
                   justifyContent: "flex-start",
-                  color: "text.primary",
+                  color: "#334155",
                   fontWeight: 600,
                   textTransform: "none",
-                  py: 1.2,
+                  py: 1.3,
+                  px: 1.5,
+                  borderRadius: 1,
+                  "&:hover": {
+                    backgroundColor: "#f1f5f9",
+                    color: "#1976d2",
+                  },
                 }}>
                 {item.label}
               </Button>
             ))}
 
-            <Divider sx={{my: 1}} />
+            <Divider sx={{my: 1.5}} />
 
             {/* =================================================
                 STUDENT LOGIN
@@ -286,25 +508,36 @@ const PublicHeader = () => {
               sx={{
                 fontWeight: 700,
                 textTransform: "none",
-                py: 1.2,
+                py: 1.3,
               }}>
               Student Login
             </Button>
 
             {/* =================================================
-                STUDENT REGISTER
+                NEW STUDENT SIGN UP
             ================================================= */}
 
             <Button
               fullWidth
               variant="outlined"
+              startIcon={<PersonAddIcon />}
               onClick={() => handleNavigation("/student/register")}
               sx={{
-                fontWeight: 700,
+                fontWeight: 800,
                 textTransform: "none",
-                py: 1.2,
+                py: 1.3,
+                mt: 0.8,
+                borderWidth: 2,
+                color: "#1976d2",
+                borderColor: "#1976d2",
+
+                "&:hover": {
+                  borderWidth: 2,
+                  borderColor: "#1565c0",
+                  backgroundColor: "#eff6ff",
+                },
               }}>
-              Student Registration
+              New Student? Sign Up
             </Button>
           </Box>
         </Box>

@@ -2,12 +2,18 @@ import {useState} from "react";
 import {
   Box,
   Button,
+  Checkbox,
   Container,
+  FormControlLabel,
+  IconButton,
+  InputAdornment,
   MenuItem,
   Paper,
   TextField,
   Typography,
 } from "@mui/material";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import SchoolIcon from "@mui/icons-material/School";
 import {useNavigate} from "react-router-dom";
 import axios from "axios";
@@ -28,18 +34,47 @@ const StudentRegistration = () => {
     parentMobile: "",
   });
 
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+
+  // Email validation
+  const isValidEmail = (email: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
+  // Indian mobile validation
+  const isValidMobile = (mobile: string) => {
+    return /^[6-9]\d{9}$/.test(mobile);
+  };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const {name, value} = event.target;
+
+    // Allow only numbers for mobile fields
+    if (name === "mobile" || name === "parentMobile") {
+      const numericValue = value.replace(/\D/g, "");
+
+      setStudent({
+        ...student,
+        [name]: numericValue,
+      });
+
+      return;
+    }
+
     setStudent({
       ...student,
-      [event.target.name]: event.target.value,
+      [name]: value,
     });
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    // Required field validation
     if (
       !student.name.trim() ||
       !student.email.trim() ||
@@ -55,11 +90,48 @@ const StudentRegistration = () => {
       return;
     }
 
+    // Email validation
+    if (!isValidEmail(student.email.trim())) {
+      alert("Please enter a valid email address.");
+      return;
+    }
+
+    // Student mobile validation
+    if (!isValidMobile(student.mobile)) {
+      alert(
+        "Please enter a valid 10-digit student mobile number starting with 6, 7, 8 or 9.",
+      );
+      return;
+    }
+
+    // Parent mobile validation
+    if (!isValidMobile(student.parentMobile)) {
+      alert(
+        "Please enter a valid 10-digit parent/guardian mobile number starting with 6, 7, 8 or 9.",
+      );
+      return;
+    }
+
+    // Password validation
+    if (student.password !== confirmPassword) {
+      alert("Password and Confirm Password do not match.");
+      return;
+    }
+
+    // Terms and Privacy Policy validation
+    if (!termsAccepted) {
+      alert(
+        "Please agree to the Terms & Conditions and Privacy Policy before registering.",
+      );
+      return;
+    }
+
     try {
       setLoading(true);
 
       const response = await api.post("/students/register", {
         ...student,
+        email: student.email.trim().toLowerCase(),
         standard: Number(student.standard),
         subscriptionType: "Free",
       });
@@ -172,6 +244,8 @@ const StudentRegistration = () => {
                 },
                 gap: 2,
               }}>
+              {/* Student Name */}
+
               <TextField
                 fullWidth
                 required
@@ -181,6 +255,8 @@ const StudentRegistration = () => {
                 onChange={handleChange}
               />
 
+              {/* Email */}
+
               <TextField
                 fullWidth
                 required
@@ -189,7 +265,15 @@ const StudentRegistration = () => {
                 name="email"
                 value={student.email}
                 onChange={handleChange}
+                error={student.email.length > 0 && !isValidEmail(student.email)}
+                helperText={
+                  student.email.length > 0 && !isValidEmail(student.email)
+                    ? "Please enter a valid email address"
+                    : ""
+                }
               />
+
+              {/* Student Mobile */}
 
               <TextField
                 fullWidth
@@ -198,17 +282,88 @@ const StudentRegistration = () => {
                 name="mobile"
                 value={student.mobile}
                 onChange={handleChange}
+                error={
+                  student.mobile.length > 0 && !isValidMobile(student.mobile)
+                }
+                helperText={
+                  student.mobile.length > 0 && !isValidMobile(student.mobile)
+                    ? "Enter a valid 10-digit mobile number"
+                    : ""
+                }
               />
+
+              {/* Password */}
 
               <TextField
                 fullWidth
                 required
-                type="password"
+                type={showPassword ? "text" : "password"}
                 label="Password"
                 name="password"
                 value={student.password}
                 onChange={handleChange}
+                slotProps={{
+                  input: {
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={() => setShowPassword(!showPassword)}
+                          edge="end"
+                          aria-label="toggle password visibility">
+                          {showPassword ? (
+                            <VisibilityOffIcon />
+                          ) : (
+                            <VisibilityIcon />
+                          )}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  },
+                }}
               />
+
+              {/* Confirm Password */}
+
+              <TextField
+                fullWidth
+                required
+                type={showConfirmPassword ? "text" : "password"}
+                label="Confirm Password"
+                value={confirmPassword}
+                onChange={event => setConfirmPassword(event.target.value)}
+                error={
+                  confirmPassword.length > 0 &&
+                  student.password !== confirmPassword
+                }
+                helperText={
+                  confirmPassword.length > 0 &&
+                  student.password !== confirmPassword
+                    ? "Passwords do not match"
+                    : ""
+                }
+                slotProps={{
+                  input: {
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={() =>
+                            setShowConfirmPassword(!showConfirmPassword)
+                          }
+                          edge="end"
+                          aria-label="toggle confirm password visibility">
+                          {showConfirmPassword ? (
+                            <VisibilityOffIcon />
+                          ) : (
+                            <VisibilityIcon />
+                          )}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  },
+                }}
+              />
+
+              {/* Board */}
 
               <TextField
                 select
@@ -227,6 +382,8 @@ const StudentRegistration = () => {
                 <MenuItem value="Other">Other</MenuItem>
               </TextField>
 
+              {/* Standard */}
+
               <TextField
                 select
                 fullWidth
@@ -244,6 +401,8 @@ const StudentRegistration = () => {
                 ))}
               </TextField>
 
+              {/* School */}
+
               <TextField
                 fullWidth
                 required
@@ -259,6 +418,8 @@ const StudentRegistration = () => {
                 }}
               />
 
+              {/* Parent Name */}
+
               <TextField
                 fullWidth
                 required
@@ -268,6 +429,8 @@ const StudentRegistration = () => {
                 onChange={handleChange}
               />
 
+              {/* Parent Mobile */}
+
               <TextField
                 fullWidth
                 required
@@ -275,8 +438,70 @@ const StudentRegistration = () => {
                 name="parentMobile"
                 value={student.parentMobile}
                 onChange={handleChange}
+                error={
+                  student.parentMobile.length > 0 &&
+                  !isValidMobile(student.parentMobile)
+                }
+                helperText={
+                  student.parentMobile.length > 0 &&
+                  !isValidMobile(student.parentMobile)
+                    ? "Enter a valid 10-digit mobile number"
+                    : ""
+                }
               />
             </Box>
+
+            {/* Terms & Privacy Policy */}
+
+            <Box
+              sx={{
+                mt: 3,
+                p: 2,
+                borderRadius: 2,
+                backgroundColor: "#f8fafc",
+                border: "1px solid #e2e8f0",
+              }}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={termsAccepted}
+                    onChange={event => setTermsAccepted(event.target.checked)}
+                  />
+                }
+                label={
+                  <Typography
+                    sx={{
+                      color: "#475569",
+                      fontSize: {
+                        xs: "0.85rem",
+                        sm: "0.9rem",
+                      },
+                    }}>
+                    I agree to the{" "}
+                    <Box
+                      component="span"
+                      sx={{
+                        color: "#1976d2",
+                        fontWeight: 700,
+                      }}>
+                      Terms & Conditions
+                    </Box>{" "}
+                    and{" "}
+                    <Box
+                      component="span"
+                      sx={{
+                        color: "#1976d2",
+                        fontWeight: 700,
+                      }}>
+                      Privacy Policy
+                    </Box>
+                    .
+                  </Typography>
+                }
+              />
+            </Box>
+
+            {/* Buttons */}
 
             <Box
               sx={{
@@ -306,7 +531,7 @@ const StudentRegistration = () => {
                 type="submit"
                 variant="contained"
                 fullWidth
-                disabled={loading}
+                disabled={loading || !termsAccepted}
                 sx={{
                   py: 1.4,
                   borderRadius: 2,

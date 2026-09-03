@@ -9,7 +9,10 @@ import {
   Button,
   Box,
   Container,
+  Divider,
 } from "@mui/material";
+
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
 
 //import {studentLogin} from "../services/student.service";
 import {studentLogin} from "../services/auth.service";
@@ -20,6 +23,10 @@ const StudentLogin = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // =====================================================
+  // STUDENT LOGIN
+  // =====================================================
 
   const handleLogin = async () => {
     if (!username.trim() || !password.trim()) {
@@ -71,7 +78,10 @@ const StudentLogin = () => {
 
       alert("Student Login Successful");
 
-      // Go to Student Exam page
+      // ============================================
+      // GO TO STUDENT DASHBOARD
+      // ============================================
+
       navigate("/student/dashboard");
     } catch (error: unknown) {
       console.error("STUDENT LOGIN ERROR:", error);
@@ -90,17 +100,31 @@ const StudentLogin = () => {
     <Container
       maxWidth="sm"
       sx={{
-        mt: 8,
+        mt: {
+          xs: 4,
+          sm: 8,
+        },
+        mb: 4,
       }}>
       <Paper
         elevation={4}
         sx={{
-          p: 4,
+          p: {
+            xs: 3,
+            sm: 4,
+          },
         }}>
+        {/* =================================================
+            TITLE
+        ================================================= */}
+
         <Typography
           variant="h4"
           gutterBottom
-          sx={{textAlign: "center"}}>
+          sx={{
+            textAlign: "center",
+            fontWeight: 700,
+          }}>
           Student Login
         </Typography>
 
@@ -113,6 +137,10 @@ const StudentLogin = () => {
           }}>
           Login using your Email or Mobile Number
         </Typography>
+
+        {/* =================================================
+            LOGIN FORM
+        ================================================= */}
 
         <Box
           sx={{
@@ -142,9 +170,50 @@ const StudentLogin = () => {
             size="large"
             fullWidth
             onClick={() => void handleLogin()}
-            disabled={loading}>
+            disabled={loading}
+            sx={{
+              py: 1.4,
+              fontWeight: 700,
+              textTransform: "none",
+            }}>
             {loading ? "Logging in..." : "Student Login"}
           </Button>
+
+          {/* =================================================
+              NEW STUDENT SIGN UP
+          ================================================= */}
+
+          <Divider sx={{my: 1}} />
+
+          <Box
+            sx={{
+              textAlign: "center",
+            }}>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{
+                mb: 1,
+              }}>
+              New student?
+            </Typography>
+
+            <Button
+              variant="outlined"
+              startIcon={<PersonAddIcon />}
+              onClick={() => navigate("/student/register")}
+              sx={{
+                fontWeight: 700,
+                textTransform: "none",
+                px: 3,
+              }}>
+              Create Your Account
+            </Button>
+          </Box>
+
+          {/* =================================================
+              BACK TO HOME
+          ================================================= */}
 
           <Button
             variant="text"

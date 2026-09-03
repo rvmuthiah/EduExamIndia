@@ -39,6 +39,13 @@ import StudentProfile from "../pages/StudentProfile";
 import StudentLeaderboard from "../pages/StudentLeaderboard";
 
 import Home from "../pages/public/Home";
+import About from "../pages/public/About";
+import Pricing from "../pages/public/Pricing";
+import FAQ from "../pages/public/FAQ";
+import Contact from "../pages/public/Contact";
+import PrivacyPolicy from "../pages/public/PrivacyPolicy";
+import Terms from "../pages/public/Terms";
+import HowItWorks from "../pages/public/HowItWorks";
 import Boards from "../pages/public/Boards";
 import Standards from "../pages/public/Standards";
 import ExamTimetable from "../pages/public/ExamTimetable";
@@ -59,6 +66,15 @@ const AppRoutes = () => {
         element={<Home />}
       />
       <Route
+        path="/about"
+        element={<About />}
+      />
+      <Route
+        path="/how-it-works"
+        element={<HowItWorks />}
+      />
+
+      <Route
         path="/boards"
         element={<Boards />}
       />
@@ -76,6 +92,30 @@ const AppRoutes = () => {
       <Route
         path="/exam-schedule"
         element={<ExamSchedule />}
+      />
+      <Route
+        path="/pricing"
+        element={<Pricing />}
+      />
+
+      <Route
+        path="/faq"
+        element={<FAQ />}
+      />
+
+      <Route
+        path="/contact"
+        element={<Contact />}
+      />
+
+      <Route
+        path="/privacy-policy"
+        element={<PrivacyPolicy />}
+      />
+
+      <Route
+        path="/terms"
+        element={<Terms />}
       />
 
       {/* ================= ADMIN LOGIN ================= */}
